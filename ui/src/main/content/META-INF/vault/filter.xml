@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter vesion="1.0">
+	<filter root="/apps/loginmodule" />
+	<filter root="/etc/designs/loginmodule" mode="merge">
+		<exclude pattern="/etc/designs/loginmodule/jcr:content/*" />
+	</filter>
+    <filter root="/etc/clientlibs/loginmodule" />
+</workspaceFilter>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<components xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0">
+    <scr:component enabled="true" immediate="true" name="com.activecq.samples.eventhandlers.SampleEventHandler">
+        <implementation class="com.activecq.samples.eventhandlers.SampleEventHandler"/>
+        <service servicefactory="false">
+            <provide interface="com.day.cq.jcrclustersupport.ClusterAware"/>
+            <provide interface="org.apache.sling.event.JobProcessor"/>
+            <provide interface="org.apache.sling.event.jobs.JobProcessor"/>
+            <provide interface="org.osgi.service.event.EventHandler"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="event.topics" type="String" private="false">
+            com/activecq/events/poked
+            com/activecq/samples/*
+        </property>
+        <property name="service.pid" value="com.activecq.samples.eventhandlers.SampleEventHandler" private="false"/>
+        <reference name="eventAdmin" interface="org.osgi.service.event.EventAdmin" cardinality="1..1" policy="static" bind="bindEventAdmin" unbind="unbindEventAdmin" checked="true" strategy="event"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="true" name="com.activecq.samples.eventhandlers.SampleEventPublisher">
+        <implementation class="com.activecq.samples.eventhandlers.SampleEventPublisher"/>
+        <service servicefactory="false">
+            <provide interface="org.apache.sling.event.JobProcessor"/>
+            <provide interface="org.apache.sling.event.jobs.JobProcessor"/>
+            <provide interface="org.osgi.service.event.EventHandler"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="event.topics" type="String" private="false">
+            org/apache/sling/api/resource/Resource/ADDED
+            org/apache/sling/api/resource/Resource/CHANGED
+            org/apache/sling/api/resource/Resource/REMOVED
+        </property>
+        <property name="service.pid" value="com.activecq.samples.eventhandlers.SampleEventPublisher" private="false"/>
+        <reference name="eventAdmin" interface="org.osgi.service.event.EventAdmin" cardinality="1..1" policy="static" bind="bindEventAdmin" unbind="unbindEventAdmin" checked="true" strategy="event"/>
+    </scr:component>
+    <scr:component enabled="true" name="com.activecq.samples.eventhandlers.SampleJcrEventListener" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.eventhandlers.SampleJcrEventListener"/>
+        <property name="service.pid" value="com.activecq.samples.eventhandlers.SampleJcrEventListener" private="false"/>
+        <reference name="repository" interface="org.apache.sling.jcr.api.SlingRepository" cardinality="1..1" policy="static" bind="bindRepository" unbind="unbindRepository" checked="true" strategy="event"/>
+        <reference name="eventAdmin" interface="org.osgi.service.event.EventAdmin" cardinality="1..1" policy="static" bind="bindEventAdmin" unbind="unbindEventAdmin" checked="true" strategy="event"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="true" name="com.activecq.samples.liveactions.SampleLiveAction" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.liveactions.SampleLiveAction"/>
+        <service servicefactory="false">
+            <provide interface="com.day.cq.wcm.api.msm.LiveAction"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="cq.wcm.msm.action.name" type="String" value="sampleLiveAction" private="false"/>
+        <property name="cq.wcm.msm.action.title" type="String" value="ActiveCQ Samples - Live Action" private="false"/>
+        <property name="cq.wcm.msm.action.rank" type="Integer" value="10" private="false"/>
+        <property name="cq.wcm.msm.action.properties" type="String" value="enabled" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.liveactions.SampleLiveAction" private="false"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="false" name="com.activecq.samples.slingadapterfactories.SampleAdapterFactory" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.slingadapterfactories.SampleAdapterFactory"/>
+        <service servicefactory="false">
+            <provide interface="org.apache.sling.api.adapter.AdapterFactory"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="service.ranking" type="Integer" value="0" private="false"/>
+        <property name="adaptables" type="String" value="org.apache.sling.api.SlingHttpServletRequest" private="false"/>
+        <property name="adapters" type="String" value="org.apache.sling.api.resource.Resource" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.slingadapterfactories.SampleAdapterFactory" private="false"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="false" name="com.activecq.samples.slingauthenticationhandler.SampleSlingAuthenticationHandler" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.slingauthenticationhandler.SampleSlingAuthenticationHandler"/>
+        <service servicefactory="false">
+            <provide interface="org.apache.sling.auth.core.spi.AuthenticationHandler"/>
+            <provide interface="org.apache.sling.auth.core.spi.AuthenticationFeedbackHandler"/>
+        </service>
+        <property name="path" type="String" value="/content/samples" private="false"/>
+        <property name="service.ranking" type="Integer" value="20" private="false"/>
+        <property name="authtype" type="String" value="FORM" private="false"/>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="prop.trust-credentials" type="String" value="TrustedInfo" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.slingauthenticationhandler.SampleSlingAuthenticationHandler" private="false"/>
+        <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory" checked="true" strategy="event"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="true" name="com.activecq.samples.slingscheduler.SampleScheduledService" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.slingscheduler.SampleScheduledService"/>
+        <service servicefactory="false">
+            <provide interface="com.day.cq.jcrclustersupport.ClusterAware"/>
+            <provide interface="java.lang.Runnable"/>
+        </service>
+        <property name="service.enabled" type="Boolean" value="true" private="false"/>
+        <property name="scheduler.expression" type="String" value="0 1 0 ? * *" private="false"/>
+        <property name="scheduler.concurrent" type="Boolean" value="false" private="false"/>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.slingscheduler.SampleScheduledService" private="false"/>
+        <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory" checked="true" strategy="event"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="false" name="com.activecq.samples.slingservice.impl.SampleClusterAwareServiceImpl" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.slingservice.impl.SampleClusterAwareServiceImpl"/>
+        <service servicefactory="false">
+            <provide interface="com.day.cq.jcrclustersupport.ClusterAware"/>
+            <provide interface="com.activecq.samples.slingservice.SampleClusterAwareService"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="prop.enabled" type="Boolean" value="false" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.slingservice.impl.SampleClusterAwareServiceImpl" private="false"/>
+        <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory" checked="true" strategy="event"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="false" name="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl"/>
+        <service servicefactory="false">
+            <provide interface="com.activecq.samples.slingservice.SampleService"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="prop.enabled" type="Boolean" value="false" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl" private="false"/>
+        <reference name="sampleService" interface="com.activecq.samples.slingservice.SampleService" cardinality="0..n" policy="dynamic" bind="bindReferenceServices" unbind="unbindReferenceServices" checked="true" strategy="event"/>
+        <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory" checked="true" strategy="event"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="false" name="com.activecq.samples.slingservice.impl.SampleServiceImpl" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.slingservice.impl.SampleServiceImpl"/>
+        <service servicefactory="false">
+            <provide interface="com.activecq.samples.slingservice.SampleService"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="prop.enabled" type="Boolean" value="false" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.slingservice.impl.SampleServiceImpl" private="false"/>
+        <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory" checked="true" strategy="event"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="false" name="com.activecq.samples.workflow.SampleProcessWorkflow">
+        <implementation class="com.activecq.samples.workflow.SampleProcessWorkflow"/>
+        <service servicefactory="false">
+            <provide interface="com.day.cq.workflow.exec.WorkflowProcess"/>
+        </service>
+        <property name="service.description" type="String" value="Sample Workflow Process implementation." private="false"/>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="process.label" type="String" value="Sample Workflow Process" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.workflow.SampleProcessWorkflow" private="false"/>
+        <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory" checked="true" strategy="event"/>
+    </scr:component>
+    <scr:component enabled="true" name="com.activecq.samples.servlets.SampleSafeMethodsServlet">
+        <implementation class="com.activecq.samples.servlets.SampleSafeMethodsServlet"/>
+        <service servicefactory="false">
+            <provide interface="javax.servlet.Servlet"/>
+        </service>
+        <property name="sling.servlet.paths" value="/services/sample" private="false"/>
+        <property name="sling.servlet.selectors" private="false">
+            print.a4
+            print
+        </property>
+        <property name="sling.servlet.extensions" value="html" private="false"/>
+        <property name="sling.servlet.methods" value="GET" private="false"/>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.servlets.SampleSafeMethodsServlet" private="false"/>
+    </scr:component>
+    <scr:component enabled="true" name="com.activecq.samples.servlets.SampleAllMethodsServlet">
+        <implementation class="com.activecq.samples.servlets.SampleAllMethodsServlet"/>
+        <service servicefactory="false">
+            <provide interface="javax.servlet.Servlet"/>
+        </service>
+        <property name="sling.servlet.paths" value="/services/sample" private="false"/>
+        <property name="sling.servlet.selectors" value="print.a4" private="false"/>
+        <property name="sling.servlet.extensions" private="false">
+            html
+            htm
+        </property>
+        <property name="sling.servlet.methods" private="false">
+            GET
+            POST
+        </property>
+        <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.servlets.SampleAllMethodsServlet" private="false"/>
+    </scr:component>
+</components>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Component title"
+    jcr:description="Component description"
+    componentGroup=".hidden"
+
+    cq:isContainer="{Boolean}false"
+    cq:noDecoration="{Boolean}false"
+
+    allowedChildren="[*/optional]"
+    allowedParents="[*/optional]"
+    sling:resourceSuperType="optional"
+    className="optional"
+    cq:cellName="optional">
+
+    <icon.png/>
+    <thumbnail.png/>
+</jcr:root>
