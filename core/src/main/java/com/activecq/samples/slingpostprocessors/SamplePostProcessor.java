@@ -30,5 +30,4 @@ public class SamplePostProcessor implements SlingPostProcessor {
     public void process(SlingHttpServletRequest request, List<Modification> changes) throws Exception {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
 }
