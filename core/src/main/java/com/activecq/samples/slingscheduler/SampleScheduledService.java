@@ -17,6 +17,7 @@ package com.activecq.samples.slingscheduler;
 
 import com.day.cq.jcrclustersupport.ClusterAware;
 import java.util.Map;
+import java.util.logging.Level;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -24,6 +25,7 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.Constants;
@@ -87,9 +89,26 @@ public class SampleScheduledService implements Runnable, ClusterAware {
 
     @Override
     public void run() {
+        // Scheduled services that do not have to be cluster aware do not need
+        // to implement this check OR extend ClusterAware
         if(!isMaster) { return; }
 
         // Scheduled service logic, only run on the Master
+
+        ResourceResolver adminResourceResolver = null;
+        try {
+            // Be careful not to leak the adminResourceResolver
+            adminResourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
+
+            // execute your scheduled service logic here ...
+        } catch (LoginException ex) {
+            java.util.logging.Logger.getLogger(SampleScheduledService.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            // ALWAYS close resolvers you open
+            if(adminResourceResolver != null) {
+                adminResourceResolver.close();
+            }
+        }
     }
 
     /** ClusterAware Methods **/
@@ -109,13 +128,10 @@ public class SampleScheduledService implements Runnable, ClusterAware {
     @Activate
     protected void activate(final ComponentContext componentContext) throws Exception {
         final Map<String, String> properties = (Map<String, String>) componentContext.getProperties();
-        this.adminResourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
     }
 
     @Deactivate
     protected void deactivate(ComponentContext ctx) {
-        if(this.adminResourceResolver != null) {
-            adminResourceResolver.close();
-        }
+
     }
 }
