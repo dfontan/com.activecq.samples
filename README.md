@@ -29,9 +29,9 @@ __*If errors, corrections or enhancements are discovered, please open a github i
 
 ## Servlets
 
-- **Sling All Methods Servlet** - Servlet implementation that responds to all HTTP methods. These are primary used to surface endoints that respond to POST (and GET) Requests.
+- **Sling All Methods Servlet** - Servlet implementation that responds to all HTTP methods. These are primary used to surface endpoints that respond to POST (and GET) Requests.
 
-- **Sling Safe Methods Servlet** - Servlet implemenation that responds to "Safe" HTTP Requests. These are primary used to surface endoints that respond to GET Requests.
+- **Sling Safe Methods Servlet** - Servlet implementation that responds to "Safe" HTTP Requests. These are primary used to surface endpoints that respond to GET Requests.
 
 ## Sling Adapter Factory
 
@@ -45,11 +45,15 @@ __*If errors, corrections or enhancements are discovered, please open a github i
 
 ## Sling Filters
 
-- **Sling Filter** - Sling implemenation of a Java Servlet Filter. Sling Filters have access to authenticated SlingHttpServletRequest objects (authentication status, target resource, etc.)
+- **Sling Filter** - Sling implementation of a Java Servlet Filter. Sling Filters have access to authenticated SlingHttpServletRequest objects (authentication status, target resource, etc.)
 
 ## Sling Scheduler
 
 - ** Sling Scheduled Service ** - Run Jobs at a defined interval (ex. Every day at Midnight or every 15 minutes)
+
+## Sling Resource Provider
+
+- ** Sling Resource Provider ** - Expose non-CRX data as Sling Resources
 
 ## Sling Service
 
@@ -58,4 +62,4 @@ __*If errors, corrections or enhancements are discovered, please open a github i
 
 ## Workflow
 
-- **Workflow Process** - Standard workflow process step. Includes implementations for persisting state between workflow steps.
+- **Workflow Process** - Standard work flow process step. Includes implementations for persisting state between workflow steps.
