@@ -26,6 +26,7 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.OsgiUtil;
+import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 
@@ -86,6 +87,6 @@ public class SampleServiceImpl implements SampleService {
         final Map<String, String> properties = (Map<String, String>) componentContext.getProperties();
 
         // Global Service Enabled/Disable Setting
-        this.enabled = OsgiUtil.toBoolean(properties.get(PROP_ENABLED), DEFAULT_ENABLED);
+        this.enabled = PropertiesUtil.toBoolean(properties.get(PROP_ENABLED), DEFAULT_ENABLED);
     }
 }
