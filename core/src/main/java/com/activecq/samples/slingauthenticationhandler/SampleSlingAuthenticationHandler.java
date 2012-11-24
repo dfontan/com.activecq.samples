@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
     @Property(label="Authentication Paths",
             description="JCR Paths which this Authentication Handler will authenticate",
             name=AuthenticationHandler.PATH_PROPERTY,
-            value={"/content/samples"},
+            value={"/content/sample-path"},
             cardinality=Integer.MAX_VALUE),
 
     @Property(label = "Service Ranking",
@@ -93,6 +93,7 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
      * @see com.day.cq.auth.impl.AbstractHTTPAuthHandler#authenticate(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public AuthenticationInfo extractCredentials(HttpServletRequest request,
             HttpServletResponse response) {
 
