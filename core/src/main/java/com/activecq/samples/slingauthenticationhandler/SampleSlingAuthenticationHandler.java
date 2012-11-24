@@ -26,7 +26,8 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.auth.core.spi.AuthenticationFeedbackHandler;
 import org.apache.sling.auth.core.spi.AuthenticationHandler;
 import org.apache.sling.auth.core.spi.AuthenticationInfo;
-import org.apache.sling.commons.osgi.OsgiUtil;
+import org.apache.sling.commons.osgi.PropertiesUtil;
+import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +120,9 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
         final AuthenticationInfo info = new AuthenticationInfo(
                 HttpServletRequest.FORM_AUTH, credentials.getUserID());
 
+        // Add the credentials obj to the AuthenticationInfo obj
+        info.put(JcrResourceConstants.AUTHENTICATION_INFO_CREDENTIALS, credentials);
+
         return info;
     }
 
@@ -166,7 +170,7 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
     protected void activate(ComponentContext componentContext) {
         Dictionary properties = componentContext.getProperties();
 
-        this.trustCredentials = OsgiUtil.toString(
+        this.trustCredentials = PropertiesUtil.toString(
                 properties.get(PROP_TRUST_CREDENTIALS), DEFAULT_TRUST_CREDENTIALS);
 
         try {
