@@ -27,6 +27,10 @@ __*If errors, corrections or enhancements are discovered, please open a github i
 
 - **Login Module** - Jackrabbit Login Module to authenticate credentials (passed in from a Sling Authentication Handler) and perform other log in related activities (creating CRX accounts, syncing data from external auth systems, etc.)
 
+## QueryBuilder
+
+- **ResultHitWriter** - HitWriter used to customize hit result JSON representations of QueryBuilder queries.
+
 ## Servlets
 
 - **Sling All Methods Servlet** - Servlet implementation that responds to all HTTP methods. These are primary used to surface endpoints that respond to POST (and GET) Requests.
