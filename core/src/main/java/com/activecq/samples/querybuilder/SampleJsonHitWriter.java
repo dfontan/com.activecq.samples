@@ -54,7 +54,7 @@ Resulting JSON object would look like:
     ]
 */
 
-@Component(metatype=false, factory="com.day.cq.search.result.ResultHitWriter/activecq-sample")
+@Component(metatype=false, factory="com.day.cq.search.writer.ResultHitWriter/activecq-sample")
 public class SampleJsonHitWriter implements ResultHitWriter {
 
     @Override
