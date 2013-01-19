@@ -107,7 +107,15 @@
                         <Embed-Directory>target/dependency</Embed-Directory>
                         <Embed-StripGroup>true</Embed-StripGroup>
 
-                        <Import-Package>!com.day.crx.core.token,!org.apache.jackrabbit.*,*</Import-Package>
+                        <Import-Package>
+                            !org.apache.jackrabbit.core,
+                            !org.apache.jackrabbit.core.security.authentication,
+                            !org.apache.jackrabbit.core.security.authentication.token,
+                            !org.apache.jackrabbit.core.security.principal,
+                            *
+                        </Import-Package>
+
+                        <!--<Import-Package>!com.day.crx.core.token,!org.apache.jackrabbit.*,*</Import-Package>-->
                         <Export-Package>${project.groupId}.*;version=${project.version}</Export-Package>
                     </instructions>
                 </configuration>
@@ -412,6 +420,16 @@
             <artifactId>core</artifactId>
             <version>2.0.0</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.granite</groupId>
+            <artifactId>com.adobe.granite.security.user</artifactId>
+            <version>0.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.granite</groupId>
+            <artifactId>com.adobe.granite.security.user</artifactId>
+            <version>0.0.14</version>
         </dependency>
     </dependencies>
     <description>Samples (Core)</description>

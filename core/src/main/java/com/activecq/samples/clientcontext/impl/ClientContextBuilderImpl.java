@@ -1,0 +1,228 @@
+/*
+ * Copyright 2012 david gonzalez.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+package com.activecq.samples.clientcontext.impl;
+
+import com.activecq.api.utils.HttpRequestUtil;
+import com.activecq.samples.clientcontext.ClientContextBuilder;
+import com.activecq.samples.clientcontext.ClientContextStore;
+import com.adobe.granite.xss.ProtectionContext;
+import com.adobe.granite.xss.XSSFilter;
+import com.day.cq.commons.Externalizer;
+import com.day.cq.wcm.api.WCMMode;
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.felix.scr.annotations.*;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.commons.json.JSONException;
+import org.apache.sling.commons.json.JSONObject;
+import org.osgi.framework.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.jcr.RepositoryException;
+import java.util.Iterator;
+import java.util.List;
+
+@Component(
+        label="ActiveCQ Samples - Client Context Builder",
+        description= "Service to build out custom Client Contexts",
+        metatype=false,
+        immediate=true
+)
+@Properties({
+        @Property(
+                label="Vendor",
+                name= Constants.SERVICE_VENDOR,
+                value="ActiveCQ",
+                propertyPrivate=true
+        )
+})
+@Service
+public class ClientContextBuilderImpl implements ClientContextBuilder {
+    private static final Logger log = LoggerFactory.getLogger(ClientContextBuilderImpl.class);
+
+    @Reference
+    private XSSFilter xss;
+
+    @Reference
+    private Externalizer externalizer;
+
+    public static final String XSS_SUFFIX = "_xss";
+    public static final String ANONYMOUS = ClientContextStore.ANONYMOUS;
+
+    @Override
+    public JSONObject getJSON(SlingHttpServletRequest request,
+                              ClientContextStore store) throws JSONException, RepositoryException {
+        if(store.handleAnonymous() && isAnonymous(request)) {
+            log.debug("Get Anonymous JSON");
+            return store.getAnonymousJSON(request);
+        } else {
+            log.debug("Get User JSON");
+            return store.getJSON(request);
+        }
+    }
+
+    @Override
+    public JSONObject xssProtect(JSONObject json, String... whitelist) throws JSONException {
+        final List<String> keys = IteratorUtils.toList(json.keys());
+        final boolean useWhiteList = !ArrayUtils.isEmpty(whitelist);
+        log.debug("Use Whitelist: " + !ArrayUtils.isEmpty(whitelist));
+
+        for(final String key : keys) {
+            log.debug("XSS Key: " + key);
+            if(!useWhiteList || (useWhiteList && !ArrayUtils.contains(whitelist, key))) {
+                log.debug("XSS -> " + key + XSS_SUFFIX + ": " + xss.filter(ProtectionContext.PLAIN_HTML_CONTENT, json.optString(key)));
+                json.put(key + XSS_SUFFIX, xss.filter(ProtectionContext.PLAIN_HTML_CONTENT, json.optString(key)));
+            }
+        }
+
+        log.debug("XSS JSON: " + json.toString(4));
+
+        return json;
+    }
+
+    @Override
+    public String getInitJavaScript(JSONObject json, ClientContextStore store) {
+        return getInitJavaScript(json, store.getContextStoreManagerName());
+    }
+
+    @Override
+    public String getInitJavaScript(JSONObject json, String manager) {
+        String script = "";
+        Iterator<String> keys = json.keys();
+
+        while(keys.hasNext()) {
+            final String key = keys.next();
+            script += getAddInitProperty(manager, key, json.optString(key));
+        }
+
+        return wrapWithAnonymousScope(script);
+    }
+
+    @Override
+    public boolean isSystemProperty(String key) {
+        return (!key.startsWith("jcr:") && !key.startsWith("sling:") && !key.startsWith("cq:last"));
+    }
+
+    @Override
+    public String getGenericInitJS(SlingHttpServletRequest request, ClientContextStore store) throws JSONException, RepositoryException {
+        final String manager = store.getContextStoreManagerName();
+        final String json = getJSON(request, store).toString();
+
+        final String script =
+                wrapWithManagerCheck("CQ_Analytics." + manager + ".loadInitProperties(" + json + ", true);", manager);
+
+        return wrapWithAnonymousScope(script);
+    }
+
+    @Override
+    public String getAuthorizableId(SlingHttpServletRequest request) {
+        if(StringUtils.isBlank(request.getQueryString())) {
+            // If the request does not have Query Params no matter what.
+            // We do not want to have a chance of caching non-anonymous personalized content.
+            log.debug("QP is blank; Is Anonymous");
+
+            return ANONYMOUS;
+        }
+
+        final AuthorizableResolution authorizableResolution = getAuthorizableResolution(request);
+        final WCMMode wcmMode = WCMMode.fromRequest(request);
+
+        if(wcmMode == null || WCMMode.DISABLED.equals(wcmMode)) {
+            // Publish mode
+            log.debug("Publish WCM Mode");
+
+            // Always look at the user Sling has associated with the Request in Publish mode
+            final ResourceResolver resourceResolver = request.getResourceResolver();
+            // TODO: better way to get AuthorizableId?
+            final String userId = resourceResolver.getUserID();
+
+            if(resourceResolver == null || StringUtils.equals(ANONYMOUS, userId)) {
+                log.debug("Is Anonymous");
+                return ANONYMOUS;
+            } else {
+                log.debug("Is User: " + userId);
+                return userId;
+            }
+        } else {
+            // Author mode; Allow impersonations by author using the Clickstream Cloud
+            log.debug("Author WCM Mode");
+
+            if(AuthorizableResolution.IMPERSONATION.equals(authorizableResolution)) {
+                // Get the authorizableId from the Query Params
+                log.debug("Get authorizableId from QP");
+                return StringUtils.strip(HttpRequestUtil.getParameterOrAttribute(request, AUTHORIZABLE_ID));
+            } else if(AuthorizableResolution.AUTHENTICATION.equals(authorizableResolution)) {
+                // Check the user Sling has associated with the request
+                final ResourceResolver resourceResolver = request.getResourceResolver();
+                final String userId = resourceResolver.getUserID();
+
+                if(resourceResolver == null || StringUtils.equals(ANONYMOUS, userId)) {
+                    log.debug("Is Anonymous");
+                    return ANONYMOUS;
+                } else {
+                    log.debug("Is User: " + userId);
+                    return userId;
+                }
+            }
+        }
+
+        // Should never happen, but when in doubt, treat as anonymous
+        log.debug("Failed through to Anonymous");
+        return ANONYMOUS;
+    }
+
+    private boolean isAnonymous(SlingHttpServletRequest request) {
+        return StringUtils.equals(ANONYMOUS, getAuthorizableId(request));
+    }
+
+    private String getAddInitProperty(String manager, String key, String value) {
+        if(StringUtils.isBlank(manager)) {
+            throw new IllegalArgumentException("Client Context Data Manager cannot be blank.");
+        } else if (StringUtils.isBlank(key)) {
+            throw new IllegalArgumentException("Key cannot be blank.");
+        }
+
+        return ";CQ_Analytics." + manager + ".addInitProperty('" + key + "','" + value + "');";
+    }
+
+    private String wrapWithAnonymousScope(String script) {
+        return ";(function() { " + script + "})();";
+    }
+
+    private String wrapWithManagerCheck(String script, String manager) {
+        return "if (CQ_Analytics && CQ_Analytics." + manager + ") {" + script + "}";
+    }
+
+    public AuthorizableResolution getAuthorizableResolution(SlingHttpServletRequest request) {
+        final WCMMode wcmMode = WCMMode.fromRequest(request);
+
+        if(wcmMode != null && !WCMMode.DISABLED.equals(wcmMode)) {
+            // If in Author Mode
+            final String authorizableId = HttpRequestUtil.getParameterOrAttribute(request, AUTHORIZABLE_ID);
+            if(StringUtils.isNotBlank(authorizableId)) {
+                log.debug("Use Impersonation");
+                return AuthorizableResolution.IMPERSONATION;
+            }
+        }
+
+        log.debug("Use Authentication");
+        return AuthorizableResolution.AUTHENTICATION;
+    }
+}
