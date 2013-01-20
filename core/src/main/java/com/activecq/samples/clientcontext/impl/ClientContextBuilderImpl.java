@@ -28,16 +28,23 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.*;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.json.JSONException;
 import org.apache.sling.commons.json.JSONObject;
+import org.apache.sling.jcr.api.SlingRepository;
+import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Component(
         label="ActiveCQ Samples - Client Context Builder",
@@ -63,8 +70,11 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
     @Reference
     private Externalizer externalizer;
 
-    public static final String XSS_SUFFIX = "_xss";
-    public static final String ANONYMOUS = ClientContextStore.ANONYMOUS;
+    @Reference
+    private SlingRepository slingRepository;
+
+    @Reference
+    private ResourceResolverFactory resourceResolverFactory;
 
     @Override
     public JSONObject getJSON(SlingHttpServletRequest request,
@@ -186,6 +196,44 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
         // Should never happen, but when in doubt, treat as anonymous
         log.debug("Failed through to Anonymous");
         return ANONYMOUS;
+    }
+
+    @Override
+    public String getPath(SlingHttpServletRequest request) {
+        final String path = StringUtils.stripToNull(HttpRequestUtil.getParameterOrAttribute(request, PATH));
+        if(path == null) { return path; }
+
+        final ResourceResolver resourceResolver = request.getResourceResolver();
+        return resourceResolver.map(request, path);
+    }
+
+    @Override
+    public ResourceResolver getResourceResolverFor(final String authorizableId) throws LoginException, RepositoryException {
+        final Map<String, Object> authInfo = new HashMap<String, Object>();
+        Session adminSession = null;
+        try {
+            adminSession = slingRepository.loginAdministrative(null);
+            authInfo.put(JcrResourceConstants.AUTHENTICATION_INFO_SESSION, adminSession);
+            final ResourceResolver resourceResolver = resourceResolverFactory.getResourceResolver(authInfo);
+
+            return resourceResolver;
+        } finally {
+            if(adminSession != null) {
+                adminSession.logout();
+                adminSession = null;
+            }
+        }
+    }
+
+    @Override
+    public void closeResourceResolverFor(ResourceResolver resourceResolver) {
+        try {
+            if(resourceResolver != null) {
+                resourceResolver.close();
+            }
+        } finally {
+            resourceResolver = null;
+        }
     }
 
     private boolean isAnonymous(SlingHttpServletRequest request) {

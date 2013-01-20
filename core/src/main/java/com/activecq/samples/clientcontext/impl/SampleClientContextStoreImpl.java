@@ -65,7 +65,14 @@ public class SampleClientContextStoreImpl implements ClientContextStore {
     @Reference
     private ClientContextBuilder clientContextBuilder;
 
-
+    /**
+     * Creates and returns the JSON object responsible for populating the Client Context store.
+     *
+     * @param request
+     * @return
+     * @throws JSONException
+     * @throws RepositoryException
+     */
     @Override
 	public JSONObject getJSON(SlingHttpServletRequest request) throws JSONException, RepositoryException {
         final String authorizableId = clientContextBuilder.getAuthorizableId(request);
@@ -86,6 +93,13 @@ public class SampleClientContextStoreImpl implements ClientContextStore {
         return clientContextBuilder.xssProtect(json);
 	}
 
+    /**
+     * Returns JSON specific for anonymous users. This is usually a pre-set or hardcoded set of values, and derived differently than those for authenticated users.
+     *
+     * @param request
+     * @return JSON specific for anonymous users.
+     * @throws JSONException
+     */
     @Override
 	public JSONObject getAnonymousJSON(SlingHttpServletRequest request) throws JSONException {
     	JSONObject json = new JSONObject();
@@ -101,11 +115,24 @@ public class SampleClientContextStoreImpl implements ClientContextStore {
         return clientContextBuilder.xssProtect(json);
 	}
 
+    /**
+     * Used to determine if getAnonymousJSON(..) should be called to generate JSON for requests deemed anonymous (either via Authentication or "impersonation" on Author)
+     *
+     * If only getJSON(..) is responsible for generating Client Context Store data, then return false from this method.
+     *
+     * @return true if this Client Context store implements a non-null getAnonymousJSON(..)
+     */
     @Override
 	public boolean handleAnonymous() {
 		return true;
 	}
 
+    /**
+     * Returns the name of the JS Data Manager that will will be loaded from this Client Context Store implemenation.
+     *  - An example value: SampleDataMgr
+     *
+     * @return the name of the Context Store Manager (Ex. SampleDataMgr).
+     */
     @Override
     public String getContextStoreManagerName() {
         return DATA_MANAGER_NAME;

@@ -9,6 +9,8 @@
         <property name="service.pid" value="com.activecq.samples.clientcontext.impl.ClientContextBuilderImpl"/>
         <reference name="xss" interface="com.adobe.granite.xss.XSSFilter" cardinality="1..1" policy="static" bind="bindXss" unbind="unbindXss"/>
         <reference name="externalizer" interface="com.day.cq.commons.Externalizer" cardinality="1..1" policy="static" bind="bindExternalizer" unbind="unbindExternalizer"/>
+        <reference name="slingRepository" interface="org.apache.sling.jcr.api.SlingRepository" cardinality="1..1" policy="static" bind="bindSlingRepository" unbind="unbindSlingRepository"/>
+        <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory"/>
     </scr:component>
     <scr:component enabled="true" immediate="true" name="com.activecq.samples.clientcontext.impl.SampleClientContextStoreImpl">
         <implementation class="com.activecq.samples.clientcontext.impl.SampleClientContextStoreImpl"/>

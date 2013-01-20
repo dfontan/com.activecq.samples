@@ -28,8 +28,10 @@ public interface ClientContextStore {
     public static final String ANONYMOUS = ClientContextBuilder.ANONYMOUS;
     public static final String AUTHORIZABLE_ID = ClientContextBuilder.AUTHORIZABLE_ID;
 
-	public JSONObject getJSON(SlingHttpServletRequest request) throws JSONException, RepositoryException;
-    public JSONObject getAnonymousJSON(SlingHttpServletRequest request) throws JSONException;
-	public boolean handleAnonymous();
     public String getContextStoreManagerName();
+
+    public JSONObject getJSON(SlingHttpServletRequest request) throws JSONException, RepositoryException;
+
+    public boolean handleAnonymous();
+    public JSONObject getAnonymousJSON(SlingHttpServletRequest request) throws JSONException;
 }

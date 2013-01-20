@@ -1,6 +1,6 @@
 ;(function(mgr) {
-    var m = "";
-    if(typeof mgr === 'string') { m = mgr; mgr = CQ_Analytics[mgr] = function(){}; } else { return; }
+    var mgrName = "";
+    if(typeof mgr === 'string') { mgrName = mgr; mgr = CQ_Analytics[mgr] = function(){}; } else { return; }
 
     /* Initialize Store */
     mgr.prototype = new CQ_Analytics.PersistedJSONStore();
@@ -11,6 +11,12 @@
     /* Prototype Methods */
     mgr.prototype.init = function() {
         this.loadJSON();
+
+        // Mark data store as being initialized
+        this.initialized = true;
+
+        // Refresh the Client Context interface (Author)        
+        this.fireEvent("update");
     };
 
     mgr.prototype.clear = function() {
@@ -22,24 +28,25 @@
 
     mgr.prototype.loadJSON = function() {
         var authorizableId = this.getAuthorizableId();
-        if(authorizableId === this.lastLoadedAuthorizable) { return; }
 
         var url = CQ_Analytics.ClientContextMgr.getClientContextURL(this.JSON_LOADER_URL);
         /* Use AuthorizableId to allow context switching on Author */
+        // Force UTF-8
+        url = CQ_Analytics.Utils.addParameter(url, "_charset_", "utf-8");
+
+        // Set authorizableId as QP; This will be ignored on Publish
         url = CQ_Analytics.Utils.addParameter(url, "authorizableId", authorizableId);
+        if(CQ) {
+            // Supply the path from which this XHR is originating
+            url = CQ_Analytics.Utils.addParameter(url, "path", CQ.shared.HTTP.getPath());
+        }
 
         // the response body will be empty if the authorizableId doesn't resolve to a profile
         this.data = CQ.shared.HTTP.eval(url);
         this.initJSON(this.data);
 
-        // Required to fresh the client context interface
+        // Persist changes from this.data to SessionPersistence cookie
         this.persist();
-
-        this.initialized = true;
-        this.lastLoadedAuthorizable = authorizableId;
-
-        this.fireEvent("initialize",this);
-        this.fireEvent("update");
     }
 
     mgr.prototype.getAuthorizableId = function() {
@@ -47,37 +54,33 @@
         return authorizableId;
     };
 
-    CQ_Analytics[m] = new mgr();
-
+    // instantiate Data Manager Object
+    var thisMgr = CQ_Analytics[mgrName] = new mgr();
 
     /*** Event Listeners ***/
 
-    /* Before persist */
-    CQ_Analytics[m].addListener('beforepersist', function() {
-        console.log('event: beforepersist');
-    }, CQ_Analytics[m]);
+    /* Config Loaded */
+    thisMgr.addListener('configloaded', function() {
+    }, thisMgr);
 
     /* Initialize */
-    CQ_Analytics[m].addListener('initialize', function() {
-        console.log('event: initialize');
-    }, CQ_Analytics[m]);
+    thisMgr.addListener('initialize', function() {
+        this.init();
+    }, thisMgr);
 
     /* Update */
-    CQ_Analytics[m].addListener('update', function() {
-        console.log('event: update');
-    }, CQ_Analytics[m]);
+    thisMgr.addListener('update', function() {
+    }, thisMgr);
 
-    /* Reload */
-    CQ_Analytics[m].addListener('reload', function() {
-        console.log('event: reload!');
-        this.loadJSON();
-    }, CQ_Analytics[m]);
+    /* Before persist */
+    thisMgr.addListener('beforepersist', function() {
+    }, thisMgr);
 
     /*** Hooks into Adobe CQ ClientContext functionality ***/
 
         // Invoke this Mgr's update event whenever the ProfileDataMgr's update it triggered. This allows this Mgr's data to be refreshed
         // in Authoring screen during Client Context "impersonations".
-    CQ_Analytics.ProfileDataMgr.addListener("update", function() { this.fireEvent("reload"); }, CQ_Analytics[m]);
+    CQ_Analytics.ProfileDataMgr.addListener("initialize", function() { this.fireEvent("initialize"); }, thisMgr);
 
     // Required registrations
     CQ_Analytics.CCM.addListener("configloaded", function() {
@@ -85,7 +88,7 @@
         CQ_Analytics.ClickstreamcloudUI.register(this.getSessionStore(), CQ_Analytics.CCM.getUIConfig(this.getName()));
         // Registers this store with the ClientContext Manager. This allows it to show up in GenericPropertiesStore dropdown        
         CQ_Analytics.CCM.register(this);
-    }, CQ_Analytics[m]);
+    }, thisMgr);
 
 
     /*** Supporting functionality ***/
@@ -99,4 +102,4 @@
      });
      */
 
-})(CQ_Analytics.CustomDataMgr || 'SampleDataMgr');
+})(CQ_Analytics.SampleDataMgr || 'SampleDataMgr');
