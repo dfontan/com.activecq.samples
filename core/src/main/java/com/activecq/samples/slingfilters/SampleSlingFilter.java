@@ -15,14 +15,6 @@
  */
 package com.activecq.samples.slingfilters;
 
-import java.io.IOException;
-import java.util.Map;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Properties;
@@ -37,6 +29,10 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.*;
+import java.io.IOException;
+import java.util.Map;
+
 /**
  *
  * @author david
@@ -44,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 @SlingFilter(
         label="ActiveCQ Samples - Sling Filter",
-        description="Sample implemenation of a Sling Filter",
+        description="Sample implementation of a Sling Filter",
         metatype=true,
         generateComponent=true, // True if you want to leverage activate/deactivate
         generateService=true,
