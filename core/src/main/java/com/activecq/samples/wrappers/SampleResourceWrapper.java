@@ -39,8 +39,16 @@ public class SampleResourceWrapper extends ResourceWrapper {
         super(resource);
     }
 
+    public void addProperty(String key, Object value) {
+        this.data.put(key, value);
+    }
+
     public void addProperties(Map<String, Object> map) {
-        this.data = map;
+        if(map == null) {
+            this.data = new HashMap<String, Object>();
+        }  else {
+            this.data = map;
+        }
     }
 
     @Override
@@ -49,10 +57,19 @@ public class SampleResourceWrapper extends ResourceWrapper {
             return super.adaptTo(type);
         }
 
-        ValueMap properties = (ValueMap) super.adaptTo(type);
+        final Map<String, Object> mergedMap = new HashMap<String, Object>();
+        final ValueMap properties = (ValueMap) super.adaptTo(type);
+
         if(properties != null) {
-            properties.putAll(this.data);
-            return (AdapterType) properties;
+            for(final String key : properties.keySet()) {
+                mergedMap.put(key, properties.get(key));
+            }
+
+            for(final String key : this.data.keySet()) {
+                mergedMap.put(key, this.data.get(key));
+            }
+
+            return (AdapterType) new ValueMapDecorator(mergedMap);
         } else {
             return (AdapterType) new ValueMapDecorator(this.data);
         }
