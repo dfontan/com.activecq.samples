@@ -57,7 +57,7 @@ public class SampleResourceDecorator implements ResourceDecorator {
      */
     private static final String DEFAULT_RESOURCE_TYPE = "vendors/activecq/samples/components/fake";
     private String resourceType = DEFAULT_RESOURCE_TYPE;
-    @Property(label = ".img Resource Type", description = "Resource type to decorate", value = DEFAULT_RESOURCE_TYPE)
+    @Property(label = "Resource Type", description = "Resource type to decorate", value = DEFAULT_RESOURCE_TYPE)
     private static final String PROP_RESOURCE_TYPE = "prop.resource-type";
 
     @Override
