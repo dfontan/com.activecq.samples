@@ -29,7 +29,8 @@ import java.util.Map;
  */
 public class SampleResourceWrapper extends ResourceWrapper {
 
-    private Map<String, Object> data = new HashMap<String, Object>();
+
+    private Map<String, Object> data;
 
     /**
      * Creates a new wrapper instance delegating all method calls to the given
@@ -37,13 +38,28 @@ public class SampleResourceWrapper extends ResourceWrapper {
      */
     public SampleResourceWrapper(Resource resource) {
         super(resource);
+        this.data = super.adaptTo(ValueMap.class);
+    }
+
+    public void removeProperty(String key) {
+        this.data.remove(key);
+    }
+
+    public void removeProperties(String... keys) {
+        for(final String key : keys) {
+            removeProperty(key);
+        }
+    }
+
+    public void addProperties(Map<? extends String, Object> map) {
+        this.data.putAll(map);
     }
 
     public void addProperty(String key, Object value) {
         this.data.put(key, value);
     }
 
-    public void addProperties(Map<String, Object> map) {
+    public void replaceAll(Map<String, Object> map) {
         if(map == null) {
             this.data = new HashMap<String, Object>();
         }  else {
@@ -57,21 +73,6 @@ public class SampleResourceWrapper extends ResourceWrapper {
             return super.adaptTo(type);
         }
 
-        final Map<String, Object> mergedMap = new HashMap<String, Object>();
-        final ValueMap properties = (ValueMap) super.adaptTo(type);
-
-        if(properties != null) {
-            for(final String key : properties.keySet()) {
-                mergedMap.put(key, properties.get(key));
-            }
-
-            for(final String key : this.data.keySet()) {
-                mergedMap.put(key, this.data.get(key));
-            }
-
-            return (AdapterType) new ValueMapDecorator(mergedMap);
-        } else {
-            return (AdapterType) new ValueMapDecorator(this.data);
-        }
+        return (AdapterType) new ValueMapDecorator(this.data);
     }
 }
