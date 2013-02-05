@@ -25,6 +25,7 @@ import com.day.cq.workflow.exec.WorkItem;
 import com.day.cq.workflow.exec.WorkflowData;
 import com.day.cq.workflow.exec.WorkflowProcess;
 import com.day.cq.workflow.metadata.MetaDataMap;
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
@@ -101,6 +102,9 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
 
     @Override
     public void execute(WorkItem workItem, WorkflowSession workflowSession, MetaDataMap args) throws WorkflowException {
+        boolean useUpstream = true;
+        boolean useDownstream = true;
+
         final WorkflowData workflowData = workItem.getWorkflowData();
         final String type = workflowData.getPayloadType();
 
@@ -118,6 +122,8 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
 
         // Initialize some variables
         List<String> newTagTitles = new ArrayList<String>();
+        List<String> newUpstreamTagTitles = new ArrayList<String>();
+        List<String> newDownstreamTagTitles = new ArrayList<String>();
         Locale locale = null;
 
         try {
@@ -145,7 +151,7 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
 
             // Get the full tag paths (namespace:path/to/tag) from the content resource
             // This only works on the cq:tags property
-            final String[] tags = properties.get(PROPERTY_CQ_TAGS, new String[]{});
+            final Tag[] tags = tagManager.getTags(contentResource);
 
             // Get any previously applied Localized Tag Titles.
             // This is used to determine if changes if any updates are needed to this node.
@@ -166,7 +172,20 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
 
                 // Derive the Localized Tag Titles for all tags in the tag hierarchy from the Tags stored in the cq:tags property
                 // This does not remove duplicate titles (different tag trees could repeat titles)
-                newTagTitles = tagPathsToLocalizedTagTitles(tags, locale, tagManager);
+                if(useUpstream) {
+                    newUpstreamTagTitles = tagsToUpstreamLocalizedTagTitles(tags, locale, tagManager);
+                    newTagTitles.addAll(newUpstreamTagTitles);
+                }
+
+                if(useDownstream) {
+                    newDownstreamTagTitles = tagsToDownstreamLocalizedTagTitles(tags, locale, tagManager, new ArrayList<String>(), 0);
+                    newTagTitles.addAll(newDownstreamTagTitles);
+                }
+
+                if(!useUpstream && !useDownstream) {
+                    newTagTitles.addAll(tagsToLocalizedTagTitles(tags, locale));
+                }
+
             }
 
             try {
@@ -177,7 +196,7 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
                 if(!isSame(newTagTitles.toArray(new String[]{}), previousTagTitles)) {
                     // If changes have been made to the Tag Names, then apply to the tag-titles property
                     // on the content resource.
-                    node.setProperty(PROPERTY_TAG_TITLES, newTagTitles.toArray(new String[newTagTitles.size()]));
+                    node.setProperty(PROPERTY_TAG_TITLES, newUpstreamTagTitles.toArray(new String[newUpstreamTagTitles.size()]));
                 } else {
                     log.debug("No change in Tag Titles. Do not update this content resource.");
                 }
@@ -227,36 +246,31 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
      * Returns localized Tag Titles for all the ancestor tags to the tags supplied in "tagPaths"
      *
      * Tags in
-     * @param tagPaths
+     * @param tags
      * @param locale
      * @param tagManager
      * @return
      */
-    private List<String> tagPathsToLocalizedTagTitles(String[] tagPaths, Locale locale, TagManager tagManager) {
-        List<String> terms = new ArrayList<String>();
+    private List<String> tagsToUpstreamLocalizedTagTitles(Tag[] tags, Locale locale, TagManager tagManager) {
+        List<String> localizedTagTitles = new ArrayList<String>();
 
-        for(String tagPath : tagPaths){
+        for(final Tag tag : tags){
+            String tagID = tag.getTagID();
+
             boolean isLast = false;
 
-            int count = StringUtils.countMatches(tagPath, PATH_DELIMITER);
+            int count = StringUtils.countMatches(tagID, PATH_DELIMITER);
             while(count >= MIN_TAG_DEPTH && count >= 0) {
 
-                Tag tag = tagManager.resolve(tagPath);
-                if(tag != null) {
-                    final String title = tag.getTitle();
-                    final String localizeTitle = tag.getTitle(locale);
-
-                    if(StringUtils.isNotBlank(localizeTitle)) {
-                        terms.add(localizeTitle);
-                    } else if(StringUtils.isNotBlank(title)) {
-                        terms.add(title);
-                    }
+                final Tag ancestorTag = tagManager.resolve(tagID);
+                if(ancestorTag != null) {
+                    localizedTagTitles.add(getLocalizedTagTitle(ancestorTag, locale));
                 }
 
                 if(isLast) { break; }
 
-                tagPath = StringUtils.substringBeforeLast(tagPath, PATH_DELIMITER);
-                count = StringUtils.countMatches(tagPath, PATH_DELIMITER);
+                tagID = StringUtils.substringBeforeLast(tagID, PATH_DELIMITER);
+                count = StringUtils.countMatches(tagID, PATH_DELIMITER);
 
                 if(count <= 0) {
                     isLast = true;
@@ -264,8 +278,53 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
             }
         }
 
-        return terms;
+        return localizedTagTitles;
     }
+
+    /**
+     * Returns localized Tag Titles for all the ancestor tags to the tags supplied in "tagPaths"
+     *
+     * Tags in
+     * @param tags
+     * @param locale
+     * @param tagManager
+     * @param localizedTagTitles
+     * @return
+     */
+    private List<String> tagsToDownstreamLocalizedTagTitles(final Tag[] tags, final Locale locale, final TagManager tagManager, List<String> localizedTagTitles, int depth) {
+        depth++;
+
+        for(final Tag tag : tags) {
+            if(tag.listChildren() != null && tag.listChildren().hasNext()) {
+                final List<Tag> children = IteratorUtils.toList(tag.listChildren());
+                localizedTagTitles = tagsToDownstreamLocalizedTagTitles(children.toArray(new Tag[children.size()]), locale, tagManager, localizedTagTitles, depth);
+            }
+
+            if(depth > 1) {
+                // Do not include the tags explicitly set on the resource
+                localizedTagTitles.add(getLocalizedTagTitle(tag, locale));
+            }
+        }
+
+        return localizedTagTitles;
+    }
+
+    /**
+     *
+     * @param tags
+     * @param locale
+     * @return
+     */
+    private List<String> tagsToLocalizedTagTitles(final Tag[] tags, final Locale locale) {
+        List<String> localizedTagTitles = new ArrayList<String>();
+
+        for(final Tag tag : tags) {
+            localizedTagTitles.add(getLocalizedTagTitle(tag, locale));
+        }
+
+        return localizedTagTitles;
+    }
+
 
     /**
      * Derive the locale from the parent path segments (/content/us/en/..)
@@ -298,6 +357,24 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
         return null;
     }
 
+    /**
+     *
+     * @param tag
+     * @param locale
+     * @return
+     */
+    private String getLocalizedTagTitle(Tag tag, Locale locale) {
+        final String title = tag.getTitle();
+        final String localizeTitle = tag.getTitle(locale);
+
+        if(StringUtils.isNotBlank(localizeTitle)) {
+            return localizeTitle;
+        } else if(StringUtils.isNotBlank(title)) {
+            return title;
+        }
+
+        return null;
+    }
 
     /**
      * Finds the proper "content" resource to read cq:tags from and write tag-titles to, based on
