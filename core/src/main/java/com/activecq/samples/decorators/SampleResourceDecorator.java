@@ -16,12 +16,18 @@
 
 package com.activecq.samples.decorators;
 
+import com.activecq.samples.decorators.custom.I18nMapDecorator;
+import com.activecq.samples.decorators.custom.XSSMapDecorator;
 import com.activecq.samples.wrappers.SampleResourceWrapper;
+import com.adobe.granite.xss.XSSFilter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.*;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceDecorator;
-import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.commons.osgi.PropertiesUtil;
+import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
@@ -39,7 +45,7 @@ import java.util.Map;
         description = "Sample",
         metatype = true,
         immediate = false,
-        configurationFactory = false)
+        inherit = true)
 @Properties({
         @Property(
                 label="Vendor",
@@ -52,13 +58,16 @@ import java.util.Map;
 public class SampleResourceDecorator implements ResourceDecorator {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Reference
+    protected XSSFilter xssFilter;
+
     /**
      * OSGi Properties *
      */
-    private static final String DEFAULT_RESOURCE_TYPE = "vendors/activecq/samples/components/fake";
-    private String resourceType = DEFAULT_RESOURCE_TYPE;
-    @Property(label = "Resource Type", description = "Resource type to decorate", value = DEFAULT_RESOURCE_TYPE)
-    private static final String PROP_RESOURCE_TYPE = "prop.resource-type";
+    protected static final String[] DEFAULT_RESOURCE_TYPES = new String[] { "vendors/activecq/samples/components/fake" };
+    protected String[] resourceTypes = DEFAULT_RESOURCE_TYPES;
+    @Property(label = "Resource Types", description = "Resource types to decorate", value = { "vendors/activecq/samples/components/fake" })
+    protected static final String PROP_RESOURCE_TYPE = "prop.resource-types";
 
     @Override
     public Resource decorate(Resource resource) {
@@ -71,27 +80,46 @@ public class SampleResourceDecorator implements ResourceDecorator {
             return resource;
         }
 
+        final Map<String, Object> map = new HashMap<String, Object>();
         final SampleResourceWrapper wrapper = new SampleResourceWrapper(resource);
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("foo", "bar");
-        map.put("business-logic", "business-data");
 
-        wrapper.addProperties(map);
+        map.put("jcr:title", "Overwritten title");
+        map.put("title", "This is the derived title");
+
+        wrapper.putAll(map);
+
+        wrapper.addValueMapDecorator(new I18nMapDecorator((SlingHttpServletRequest) request));
+        wrapper.addValueMapDecorator(new XSSMapDecorator(xssFilter));
 
         return wrapper;
     }
 
     /**
-     * Helper methodss *
+     * Helper methods *
      */
-
     protected boolean accepts(Resource resource, HttpServletRequest request) {
-        if(resource == null || request == null) {
+        if(resource == null || request == null || !(request instanceof SlingHttpServletRequest))  {
             return false;
         }
 
-        return (ResourceUtil.isA(resource, this.resourceType));
+        for(final String resourceType : this.resourceTypes) {
+            final ValueMap properties = resource.adaptTo(ValueMap.class);
+            if(properties == null) { return false; }
+
+            final String slingResourceType = properties.get(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY, "");
+
+            if(StringUtils.equals(resourceType, slingResourceType)) {
+                return true;
+            }
+        }
+
+        return false;
     }
+
+    /**
+     * Abstract Methods *
+     */
+
 
     /**
      * OSGi Component Methods *
@@ -109,6 +137,6 @@ public class SampleResourceDecorator implements ResourceDecorator {
     private void configure(final ComponentContext componentContext) {
         final Map<String, String> properties = (Map<String, String>) componentContext.getProperties();
 
-        this.resourceType = PropertiesUtil.toString(properties.get(PROP_RESOURCE_TYPE), DEFAULT_RESOURCE_TYPE);
+        this.resourceTypes = PropertiesUtil.toStringArray(properties.get(PROP_RESOURCE_TYPE), DEFAULT_RESOURCE_TYPES);
     }
 }

@@ -29,8 +29,9 @@
             <provide interface="org.apache.sling.api.resource.ResourceDecorator"/>
         </service>
         <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
-        <property name="prop.resource-type" type="String" value="vendors/activecq/samples/components/fake" private="false"/>
+        <property name="prop.resource-types" type="String" value="vendors/activecq/samples/components/fake" private="false"/>
         <property name="service.pid" value="com.activecq.samples.decorators.SampleResourceDecorator" private="false"/>
+        <reference name="xssFilter" interface="com.adobe.granite.xss.XSSFilter" cardinality="1..1" policy="static" bind="bindXssFilter" unbind="unbindXssFilter" checked="true" strategy="event"/>
     </scr:component>
     <scr:component enabled="true" immediate="true" name="com.activecq.samples.eventhandlers.SampleEventHandler">
         <implementation class="com.activecq.samples.eventhandlers.SampleEventHandler"/>

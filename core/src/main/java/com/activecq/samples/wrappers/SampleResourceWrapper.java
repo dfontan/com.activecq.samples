@@ -16,12 +16,15 @@
 
 package com.activecq.samples.wrappers;
 
+import com.activecq.samples.decorators.custom.MapDecorator;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,33 +32,34 @@ import java.util.Map;
  */
 public class SampleResourceWrapper extends ResourceWrapper {
 
-
-    private Map<String, Object> data;
+    private Map<String, Object> data = new HashMap<String, Object>();
+    private List<MapDecorator> mapDecorators = new ArrayList<MapDecorator>();
 
     /**
      * Creates a new wrapper instance delegating all method calls to the given
      * <code>resource</code>.
      */
-    public SampleResourceWrapper(Resource resource) {
+    public SampleResourceWrapper(final Resource resource) {
         super(resource);
-        this.data = super.adaptTo(ValueMap.class);
+        final ValueMap valueMap = super.adaptTo(ValueMap.class);
+        this.data.putAll(valueMap);
     }
 
-    public void removeProperty(String key) {
+    public void remove(String key) {
         this.data.remove(key);
     }
 
-    public void removeProperties(String... keys) {
+    public void removeAll(String... keys) {
         for(final String key : keys) {
-            removeProperty(key);
+            remove(key);
         }
     }
 
-    public void addProperties(Map<? extends String, Object> map) {
+    public void putAll(Map<? extends String, Object> map) {
         this.data.putAll(map);
     }
 
-    public void addProperty(String key, Object value) {
+    public void put(String key, Object value) {
         this.data.put(key, value);
     }
 
@@ -67,12 +71,22 @@ public class SampleResourceWrapper extends ResourceWrapper {
         }
     }
 
+    public void addValueMapDecorator(final MapDecorator mapDecorator) {
+        mapDecorators.add(mapDecorator);
+    }
+
     @Override
     public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
         if (type != ValueMap.class) {
             return super.adaptTo(type);
         }
 
-        return (AdapterType) new ValueMapDecorator(this.data);
+        Map<String, Object> map = new HashMap<String, Object>(this.data);
+
+        for(MapDecorator mapDecorator : this.mapDecorators) {
+            map.putAll(mapDecorator.decorate(this.data));
+        }
+
+        return (AdapterType) new ValueMapDecorator(map);
     }
 }
