@@ -23,16 +23,6 @@
         <reference name="userPropertiesService" interface="com.adobe.granite.security.user.UserPropertiesService" cardinality="1..1" policy="static" bind="bindUserPropertiesService" unbind="unbindUserPropertiesService"/>
         <reference name="clientContextBuilder" interface="com.activecq.samples.clientcontext.ClientContextBuilder" cardinality="1..1" policy="static" bind="bindClientContextBuilder" unbind="unbindClientContextBuilder"/>
     </scr:component>
-    <scr:component enabled="true" immediate="false" name="com.activecq.samples.decorators.SampleResourceDecorator" activate="activate" deactivate="deactivate">
-        <implementation class="com.activecq.samples.decorators.SampleResourceDecorator"/>
-        <service servicefactory="false">
-            <provide interface="org.apache.sling.api.resource.ResourceDecorator"/>
-        </service>
-        <property name="service.vendor" type="String" value="ActiveCQ"/>
-        <property name="prop.resource-types" type="String" value="vendors/activecq/samples/components/fake"/>
-        <property name="service.pid" value="com.activecq.samples.decorators.SampleResourceDecorator"/>
-        <reference name="xssFilter" interface="com.adobe.granite.xss.XSSFilter" cardinality="1..1" policy="static" bind="bindXssFilter" unbind="unbindXssFilter"/>
-    </scr:component>
     <scr:component enabled="true" immediate="true" name="com.activecq.samples.eventhandlers.SampleEventHandler">
         <implementation class="com.activecq.samples.eventhandlers.SampleEventHandler"/>
         <service servicefactory="false">
@@ -207,6 +197,26 @@
         <property name="process.label" type="String" value="Sample Workflow Process"/>
         <property name="service.pid" value="com.activecq.samples.workflow.SampleProcessWorkflow"/>
         <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="false" name="com.activecq.samples.decorators.SamplePrimaryTypeResourceDecorator" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.decorators.SamplePrimaryTypeResourceDecorator"/>
+        <service servicefactory="false">
+            <provide interface="org.apache.sling.api.resource.ResourceDecorator"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ"/>
+        <property name="prop.primary-types" type="String" value="cq:PageContent"/>
+        <property name="service.pid" value="com.activecq.samples.decorators.SamplePrimaryTypeResourceDecorator"/>
+        <reference name="xssFilter" interface="com.adobe.granite.xss.XSSFilter" cardinality="1..1" policy="static" bind="bindXssFilter" unbind="unbindXssFilter"/>
+    </scr:component>
+    <scr:component enabled="true" immediate="false" name="com.activecq.samples.decorators.SampleResourceTypeResourceDecorator" activate="activate" deactivate="deactivate">
+        <implementation class="com.activecq.samples.decorators.SampleResourceTypeResourceDecorator"/>
+        <service servicefactory="false">
+            <provide interface="org.apache.sling.api.resource.ResourceDecorator"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ"/>
+        <property name="prop.resource-types" type="String" value="vendors/activecq/samples/components/fake"/>
+        <property name="service.pid" value="com.activecq.samples.decorators.SampleResourceTypeResourceDecorator"/>
+        <reference name="xssFilter" interface="com.adobe.granite.xss.XSSFilter" cardinality="1..1" policy="static" bind="bindXssFilter" unbind="unbindXssFilter"/>
     </scr:component>
     <scr:component enabled="true" name="com.activecq.samples.servlets.SampleSafeMethodsServlet">
         <implementation class="com.activecq.samples.servlets.SampleSafeMethodsServlet"/>

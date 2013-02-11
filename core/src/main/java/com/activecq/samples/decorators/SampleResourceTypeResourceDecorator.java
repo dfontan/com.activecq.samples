@@ -20,16 +20,11 @@ import com.activecq.samples.decorators.custom.I18nMapDecorator;
 import com.activecq.samples.decorators.custom.XSSMapDecorator;
 import com.activecq.samples.wrappers.SampleResourceWrapper;
 import com.adobe.granite.xss.XSSFilter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.*;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceDecorator;
-import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,22 +47,20 @@ import java.util.Map;
                 name= Constants.SERVICE_VENDOR,
                 value="ActiveCQ",
                 propertyPrivate=true
+        ),
+        @Property(
+                label = "Resource Types",
+                description = "Resource Types to decorate",
+                value = { "vendors/activecq/samples/components/fake" },
+                name = "prop.resource-types"
         )
 })
 @Service
-public class SampleResourceDecorator implements ResourceDecorator {
+public class SampleResourceTypeResourceDecorator extends AbstractResourceTypeResourceDecorator implements ResourceDecorator {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Reference
     protected XSSFilter xssFilter;
-
-    /**
-     * OSGi Properties *
-     */
-    protected static final String[] DEFAULT_RESOURCE_TYPES = new String[] { "vendors/activecq/samples/components/fake" };
-    protected String[] resourceTypes = DEFAULT_RESOURCE_TYPES;
-    @Property(label = "Resource Types", description = "Resource types to decorate", value = { "vendors/activecq/samples/components/fake" })
-    protected static final String PROP_RESOURCE_TYPE = "prop.resource-types";
 
     @Override
     public Resource decorate(Resource resource) {
@@ -92,51 +85,5 @@ public class SampleResourceDecorator implements ResourceDecorator {
         wrapper.addValueMapDecorator(new XSSMapDecorator(xssFilter));
 
         return wrapper;
-    }
-
-    /**
-     * Helper methods *
-     */
-    protected boolean accepts(Resource resource, HttpServletRequest request) {
-        if(resource == null || request == null || !(request instanceof SlingHttpServletRequest))  {
-            return false;
-        }
-
-        for(final String resourceType : this.resourceTypes) {
-            final ValueMap properties = resource.adaptTo(ValueMap.class);
-            if(properties == null) { return false; }
-
-            final String slingResourceType = properties.get(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY, "");
-
-            if(StringUtils.equals(resourceType, slingResourceType)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Abstract Methods *
-     */
-
-
-    /**
-     * OSGi Component Methods *
-     */
-
-    @Activate
-    protected void activate(final ComponentContext componentContext) throws Exception {
-        configure(componentContext);
-    }
-
-    @Deactivate
-    protected void deactivate(ComponentContext ctx) {
-    }
-
-    private void configure(final ComponentContext componentContext) {
-        final Map<String, String> properties = (Map<String, String>) componentContext.getProperties();
-
-        this.resourceTypes = PropertiesUtil.toStringArray(properties.get(PROP_RESOURCE_TYPE), DEFAULT_RESOURCE_TYPES);
     }
 }
