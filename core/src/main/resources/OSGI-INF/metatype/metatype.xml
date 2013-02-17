@@ -20,10 +20,10 @@
     <OCD id="com.activecq.samples.slingservice.impl.SampleServiceImpl" name="ActiveCQ Samples - Service" description="Sample implementation of a service.">
         <AD id="prop.enabled" type="Boolean" default="false" name="Service Enable/Disable" description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service."/>
     </OCD>
-    <OCD id="com.activecq.samples.decorators.SamplePrimaryTypeResourceDecorator" name="ActiveCQ - Sample Resource Decorator" description="Sample">
+    <OCD id="com.activecq.samples.resourcedecorators.SamplePrimaryTypeResourceDecorator" name="ActiveCQ - Sample Resource Decorator" description="Sample">
         <AD id="prop.primary-types" type="String" default="cq:PageContent" name="Primary Types" description="Primary Types to decorate"/>
     </OCD>
-    <OCD id="com.activecq.samples.decorators.SampleResourceTypeResourceDecorator" name="ActiveCQ - Sample Resource Decorator" description="Sample">
+    <OCD id="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator" name="ActiveCQ - Sample Resource Decorator" description="Sample">
         <AD id="prop.resource-types" type="String" default="vendors/activecq/samples/components/fake" name="Resource Types" description="Resource Types to decorate"/>
     </OCD>
     <Designate pid="com.activecq.samples.slingauthenticationhandler.SampleSlingAuthenticationHandler">
@@ -44,10 +44,10 @@
     <Designate pid="com.activecq.samples.slingservice.impl.SampleServiceImpl">
         <Object ocdref="com.activecq.samples.slingservice.impl.SampleServiceImpl"/>
     </Designate>
-    <Designate pid="com.activecq.samples.decorators.SamplePrimaryTypeResourceDecorator">
-        <Object ocdref="com.activecq.samples.decorators.SamplePrimaryTypeResourceDecorator"/>
+    <Designate pid="com.activecq.samples.resourcedecorators.SamplePrimaryTypeResourceDecorator">
+        <Object ocdref="com.activecq.samples.resourcedecorators.SamplePrimaryTypeResourceDecorator"/>
     </Designate>
-    <Designate pid="com.activecq.samples.decorators.SampleResourceTypeResourceDecorator">
-        <Object ocdref="com.activecq.samples.decorators.SampleResourceTypeResourceDecorator"/>
+    <Designate pid="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator">
+        <Object ocdref="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator"/>
     </Designate>
 </metatype:MetaData>

@@ -14,8 +14,9 @@
  *  limitations under the License.
  */
 
-package com.activecq.samples.decorators;
+package com.activecq.samples.resourcedecorators;
 
+import com.activecq.samples.resourcewrappers.SampleSlideshowResourceWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.*;
 import org.apache.sling.api.resource.Resource;
@@ -35,11 +36,10 @@ import java.util.Map;
  * User: david
  */
 @Component(
-        label = "ActiveCQ - Abstract Resource Type Resource Decorator",
-        description = "Base abstract implementation for Resource Decorators that implements OSGi Component inputs for ResourceTypes.",
-        metatype = false,
+        label = "ActiveCQ - Sample Slideshow Resource Decorator",
+        description = "Sample",
+        metatype = true,
         immediate = false,
-        componentAbstract = true,
         inherit = false)
 @Properties({
         @Property(
@@ -51,14 +51,14 @@ import java.util.Map;
         @Property(
                 label = "Resource Types",
                 description = "Resource Types to decorate",
-                value = { "" },
+                value = { "vendors/activecq/samples/components/fake/slideshow" },
                 name = "prop.resource-types"
         )
 })
 @Service
-public abstract class AbstractResourceTypeResourceDecorator implements ResourceDecorator {
+public class SampleResourceTypeResourceDecorator implements ResourceDecorator {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    protected String[] resourceTypes;
+    private String[] resourceTypes = new String[] {};
 
     @Override
     public Resource decorate(Resource resource) {
@@ -67,17 +67,47 @@ public abstract class AbstractResourceTypeResourceDecorator implements ResourceD
 
     @Override
     public Resource decorate(Resource resource, HttpServletRequest request) {
-        return resource;
+        /* Usually you will want to check to ensure the resource meets some criteria before
+           decorating. It is rare that you want to decorate all resources all the time.
+
+           An "accepts(..)" method is a handy abstraction for managing this.
+        */
+        if(!accepts(resource, request)) {
+            // In this sample, only handle resources with
+            // sling:resourceType=vendors/activecq/samples/components/fake/slideshow
+            return resource;
+        }
+        // Remember to return early (as seen above) as this decorator is executed on all
+        // Resource resolutions (this happens ALOT), especially if the decorator performs
+        // any complex/slow running logic.
+
+        // Common use cases include switching ResourceTypes of resources based on path or
+        // adding metadata.
+
+        // You will almost always want to return a customer resource type.
+
+        // The returned resource via the Sling API will be of type "Resource"
+        // but will be castable to type "SampleSlideshowResourceWrapper", thus
+        // exposing all its custom methods.
+
+        // Any overridden methods (ex. adaptTo) on the wrapper, will be used when invoked on the
+        // resultant Resource object (even before casting).
+        return new SampleSlideshowResourceWrapper(resource);
     }
 
     /**
-     * Abstract Methods *
+     * Check if the decorator should decorate this resource.
+     *
+     * @param resource
+     * @param request
+     * @return
      */
-    protected boolean accepts(Resource resource, HttpServletRequest request) {
+    private boolean accepts(final Resource resource, final HttpServletRequest request) {
         if(resource == null)  {
             return false;
         }
 
+        // Using ResourceUtil.isA(..) will send this into an infinite recursive lookup loop
         for(final String resourceType : this.resourceTypes) {
             final ValueMap properties = resource.adaptTo(ValueMap.class);
             if(properties == null) { return false; }
@@ -109,6 +139,7 @@ public abstract class AbstractResourceTypeResourceDecorator implements ResourceD
     private void configure(final ComponentContext componentContext) {
         final Map<String, String> properties = (Map<String, String>) componentContext.getProperties();
 
-        this.resourceTypes = PropertiesUtil.toStringArray(properties.get("prop.resource-types"), new String[] {});
+        this.resourceTypes = PropertiesUtil.toStringArray(properties.get("prop.resource-types"), new String[]{});
     }
+
 }

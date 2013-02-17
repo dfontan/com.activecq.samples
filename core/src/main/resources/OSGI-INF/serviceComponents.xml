@@ -199,23 +199,23 @@
         <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory"/>
     </scr:component>
     <scr:component enabled="true" immediate="false" name="com.activecq.samples.decorators.SamplePrimaryTypeResourceDecorator" activate="activate" deactivate="deactivate">
-        <implementation class="com.activecq.samples.decorators.SamplePrimaryTypeResourceDecorator"/>
+        <implementation class="com.activecq.samples.resourcedecorators.SamplePrimaryTypeResourceDecorator"/>
         <service servicefactory="false">
             <provide interface="org.apache.sling.api.resource.ResourceDecorator"/>
         </service>
         <property name="service.vendor" type="String" value="ActiveCQ"/>
         <property name="prop.primary-types" type="String" value="cq:PageContent"/>
-        <property name="service.pid" value="com.activecq.samples.decorators.SamplePrimaryTypeResourceDecorator"/>
+        <property name="service.pid" value="com.activecq.samples.resourcedecorators.SamplePrimaryTypeResourceDecorator"/>
         <reference name="xssFilter" interface="com.adobe.granite.xss.XSSFilter" cardinality="1..1" policy="static" bind="bindXssFilter" unbind="unbindXssFilter"/>
     </scr:component>
     <scr:component enabled="true" immediate="false" name="com.activecq.samples.decorators.SampleResourceTypeResourceDecorator" activate="activate" deactivate="deactivate">
-        <implementation class="com.activecq.samples.decorators.SampleResourceTypeResourceDecorator"/>
+        <implementation class="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator"/>
         <service servicefactory="false">
             <provide interface="org.apache.sling.api.resource.ResourceDecorator"/>
         </service>
         <property name="service.vendor" type="String" value="ActiveCQ"/>
         <property name="prop.resource-types" type="String" value="vendors/activecq/samples/components/fake"/>
-        <property name="service.pid" value="com.activecq.samples.decorators.SampleResourceTypeResourceDecorator"/>
+        <property name="service.pid" value="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator"/>
         <reference name="xssFilter" interface="com.adobe.granite.xss.XSSFilter" cardinality="1..1" policy="static" bind="bindXssFilter" unbind="unbindXssFilter"/>
     </scr:component>
     <scr:component enabled="true" name="com.activecq.samples.servlets.SampleSafeMethodsServlet">
