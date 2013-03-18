@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0" localization="OSGI-INF/metatype/metatype">
+    <OCD id="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator" name="ActiveCQ - Sample Slideshow Resource Decorator" description="Sample">
+        <AD id="prop.resource-types" type="String" default="vendors/activecq/samples/components/fake/slideshow" name="Resource Types" description="Resource Types to decorate"/>
+    </OCD>
     <OCD id="com.activecq.samples.slingauthenticationhandler.SampleSlingAuthenticationHandler" name="ActiveCQ Samples - Sling Authentication Handler" description="Sample Sling Authentication Handler">
         <AD id="path" type="String" default="/content/sample-path" name="Authentication Paths" description="JCR Paths which this Authentication Handler will authenticate" cardinality="2147483647"/>
         <AD id="service.ranking" type="Integer" default="20" name="Service Ranking" description="Service ranking. Higher gives more priority."/>
@@ -20,12 +23,9 @@
     <OCD id="com.activecq.samples.slingservice.impl.SampleServiceImpl" name="ActiveCQ Samples - Service" description="Sample implementation of a service.">
         <AD id="prop.enabled" type="Boolean" default="false" name="Service Enable/Disable" description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service."/>
     </OCD>
-    <OCD id="com.activecq.samples.resourcedecorators.SamplePrimaryTypeResourceDecorator" name="ActiveCQ - Sample Resource Decorator" description="Sample">
-        <AD id="prop.primary-types" type="String" default="cq:PageContent" name="Primary Types" description="Primary Types to decorate"/>
-    </OCD>
-    <OCD id="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator" name="ActiveCQ - Sample Resource Decorator" description="Sample">
-        <AD id="prop.resource-types" type="String" default="vendors/activecq/samples/components/fake" name="Resource Types" description="Resource Types to decorate"/>
-    </OCD>
+    <Designate pid="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator">
+        <Object ocdref="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator"/>
+    </Designate>
     <Designate pid="com.activecq.samples.slingauthenticationhandler.SampleSlingAuthenticationHandler">
         <Object ocdref="com.activecq.samples.slingauthenticationhandler.SampleSlingAuthenticationHandler"/>
     </Designate>
@@ -43,11 +43,5 @@
     </Designate>
     <Designate pid="com.activecq.samples.slingservice.impl.SampleServiceImpl">
         <Object ocdref="com.activecq.samples.slingservice.impl.SampleServiceImpl"/>
-    </Designate>
-    <Designate pid="com.activecq.samples.resourcedecorators.SamplePrimaryTypeResourceDecorator">
-        <Object ocdref="com.activecq.samples.resourcedecorators.SamplePrimaryTypeResourceDecorator"/>
-    </Designate>
-    <Designate pid="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator">
-        <Object ocdref="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator"/>
     </Designate>
 </metatype:MetaData>
