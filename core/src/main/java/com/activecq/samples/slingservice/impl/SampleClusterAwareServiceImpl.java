@@ -16,26 +16,14 @@
 package com.activecq.samples.slingservice.impl;
 
 import com.activecq.samples.slingservice.SampleClusterAwareService;
-import com.activecq.samples.slingservice.impl.*;
-import com.activecq.samples.slingservice.SampleService;
-import com.activecq.samples.slingservice.SampleService;
 import com.day.cq.jcrclustersupport.ClusterAware;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.felix.scr.annotations.*;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.commons.osgi.OsgiUtil;
+import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
+
+import java.util.Map;
 
 @Component(
     label="ActiveCQ Samples - Service",
@@ -70,7 +58,6 @@ public class SampleClusterAwareServiceImpl implements SampleClusterAwareService,
 
     /** Fields **/
 
-    private ResourceResolver adminResourceResolver;
     private String postfix = "";
 
     /** Service Methods **/
@@ -105,23 +92,15 @@ public class SampleClusterAwareServiceImpl implements SampleClusterAwareService,
     @Deactivate
     protected void deactivate(ComponentContext ctx) {
         this.enabled = false;
-
-        if(this.adminResourceResolver != null) {
-            this.adminResourceResolver.close();
-        }
     }
 
     private void configure(final ComponentContext componentContext) {
         final Map<String, String> properties = (Map<String, String>) componentContext.getProperties();
 
         // Global Service Enabled/Disable Setting
-        this.enabled = OsgiUtil.toBoolean(properties.get(PROP_ENABLED), DEFAULT_ENABLED);
+        this.enabled = PropertiesUtil.toBoolean(properties.get(PROP_ENABLED), DEFAULT_ENABLED);
 
-        // Get admin resource resolver
-        try {
-            this.adminResourceResolver = this.resourceResolverFactory.getAdministrativeResourceResolver(null);
-        } catch (LoginException ex) {
-            Logger.getLogger(SampleServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        // Resource resolvers are NOT thread safe,
+        // Do not instantiate as Service (Singleton) instance variables!
     }
 }
