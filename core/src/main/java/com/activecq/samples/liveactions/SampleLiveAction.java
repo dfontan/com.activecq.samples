@@ -19,19 +19,15 @@ import com.day.cq.wcm.api.WCMException;
 import com.day.cq.wcm.api.msm.ActionConfig;
 import com.day.cq.wcm.api.msm.LiveAction;
 import com.day.cq.wcm.api.msm.LiveRelationship;
-import java.util.Dictionary;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
+import org.apache.felix.scr.annotations.*;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.OsgiUtil;
+import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Dictionary;
 
 /**
  *
@@ -126,10 +122,10 @@ public class SampleLiveAction implements LiveAction {
     protected void activate(ComponentContext context) {
         Dictionary<String, Object> properties = context.getProperties();
 
-        name = OsgiUtil.toString(properties.get("cq.wcm.msm.action.name"), "liveActionNameNotSet");
-        title = OsgiUtil.toString(properties.get("cq.wcm.msm.action.title"), "LiveAction Title Not Set");
-        rank = OsgiUtil.toInteger(properties.get("cq.wcm.msm.action.rank"), Integer.MAX_VALUE);
-        parameterNames = OsgiUtil.toStringArray(properties.get("cq.wcm.msm.action.properties"), new String[0]);
+        name = PropertiesUtil.toString(properties.get("cq.wcm.msm.action.name"), "liveActionNameNotSet");
+        title = PropertiesUtil.toString(properties.get("cq.wcm.msm.action.title"), "LiveAction Title Not Set");
+        rank = PropertiesUtil.toInteger(properties.get("cq.wcm.msm.action.rank"), Integer.MAX_VALUE);
+        parameterNames = PropertiesUtil.toStringArray(properties.get("cq.wcm.msm.action.properties"), new String[0]);
     }
 
     @Deactivate

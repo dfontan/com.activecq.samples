@@ -16,26 +16,15 @@
 package com.activecq.samples.slingservice.impl;
 
 import com.activecq.samples.slingservice.SampleService;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.*;
 import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.apache.felix.scr.annotations.References;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.commons.osgi.OsgiUtil;
+import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
+
+import java.util.*;
 
 @Component(
     label = "ActiveCQ Samples - Service",
@@ -160,8 +149,8 @@ public class SampleMultiReferenceServiceImpl implements SampleService {
                 return -1;
             }
 
-            final int ranking1 = OsgiUtil.toInteger(ref1.getProperty(Constants.SERVICE_RANKING), 0);
-            final int ranking2 = OsgiUtil.toInteger(ref2.getProperty(Constants.SERVICE_RANKING), 0);
+            final int ranking1 = PropertiesUtil.toInteger(ref1.getProperty(Constants.SERVICE_RANKING), 0);
+            final int ranking2 = PropertiesUtil.toInteger(ref2.getProperty(Constants.SERVICE_RANKING), 0);
 
             if (ranking1 < ranking2) {
                 return -1;
@@ -194,6 +183,6 @@ public class SampleMultiReferenceServiceImpl implements SampleService {
         this.componentContext = componentContext;
 
         // Global Service Enabled/Disable Setting
-        this.enabled = OsgiUtil.toBoolean(properties.get(PROP_ENABLED), DEFAULT_ENABLED);
+        this.enabled = PropertiesUtil.toBoolean(properties.get(PROP_ENABLED), DEFAULT_ENABLED);
     }
 }
