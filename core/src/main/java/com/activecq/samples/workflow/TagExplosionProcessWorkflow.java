@@ -128,10 +128,6 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
             // custom property "tag-titles" to
             final Resource contentResource = getContentResource(resource);
 
-
-            com.adobe.granite.asset.api.Asset a = contentResource.adaptTo(com.adobe.granite.asset.api.Asset.class);
-            a.getIdentifier();
-
             if(contentResource == null) {
                 log.error("Could not find a valid content resource node for payload: {}", resource.getPath());
                 return;
