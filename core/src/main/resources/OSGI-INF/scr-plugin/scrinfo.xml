@@ -223,13 +223,7 @@
         <service servicefactory="false">
             <provide interface="javax.servlet.Servlet"/>
         </service>
-        <property name="sling.servlet.paths" value="/services/sample" private="false"/>
-        <property name="sling.servlet.selectors" private="false">
-            print.a4
-            print
-        </property>
-        <property name="sling.servlet.extensions" value="html" private="false"/>
-        <property name="sling.servlet.methods" value="GET" private="false"/>
+        <property name="sling.servlet.paths" value="/bin/safe-sample" private="false"/>
         <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
         <property name="service.pid" value="com.activecq.samples.servlets.SampleSafeMethodsServlet" private="false"/>
     </scr:component>
@@ -238,7 +232,7 @@
         <service servicefactory="false">
             <provide interface="javax.servlet.Servlet"/>
         </service>
-        <property name="sling.servlet.paths" value="/services/sample" private="false"/>
+        <property name="sling.servlet.paths" value="/services/all-sample" private="false"/>
         <property name="sling.servlet.selectors" value="print.a4" private="false"/>
         <property name="sling.servlet.extensions" private="false">
             html
