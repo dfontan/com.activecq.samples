@@ -15,9 +15,6 @@
  */
 package com.activecq.samples.servlets;
 
-import java.io.IOException;
-import java.util.List;
-import javax.servlet.ServletException;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
@@ -25,9 +22,10 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.OptingServlet;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.apache.sling.servlets.post.Modification;
-import org.apache.sling.servlets.post.SlingPostProcessor;
 import org.osgi.framework.Constants;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 /**
  *
@@ -36,7 +34,7 @@ import org.osgi.framework.Constants;
 @SlingServlet(
         label="ActiveCQ Sample - Sling All Methods Servlet",
         description="Sample implementation of a Sling All Methods Servlet.",
-        paths={"/services/sample"},
+        paths={"/services/all-sample"},
         methods={"GET", "POST"}, // Ignored if paths is set - Defaults to GET if not specified
         resourceTypes={}, // Ignored if paths is set
         selectors={"print.a4"}, // Ignored if paths is set
@@ -56,13 +54,11 @@ public class SampleAllMethodsServlet extends SlingAllMethodsServlet implements O
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-        super.doGet(request, response);
         // Implement custom handling of GET requests
     }
 
     @Override
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-        super.doPost(request, response);
         // Implement custom handling of POST requests
     }
 

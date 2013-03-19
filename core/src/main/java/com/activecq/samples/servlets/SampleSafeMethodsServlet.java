@@ -15,10 +15,6 @@
  */
 package com.activecq.samples.servlets;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import javax.servlet.ServletException;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
@@ -28,6 +24,11 @@ import org.apache.sling.api.servlets.OptingServlet;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.framework.Constants;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  *
  * @author david
@@ -35,7 +36,7 @@ import org.osgi.framework.Constants;
 @SlingServlet(
         label="ActiveCQ Sample - Sling Safe Methods Servlet",
         description="Sample implementation of a Sling All Methods Servlet.",
-        paths={"/services/sample"},
+        paths={"/services/safe-sample"},
         methods={"GET"}, // Ignored if paths is set - Defaults to GET if not specified
         resourceTypes={}, // Ignored if paths is set
         selectors={"print.a4", "print"}, // Ignored if paths is set
@@ -56,7 +57,6 @@ public class SampleSafeMethodsServlet extends SlingSafeMethodsServlet implements
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-        super.doGet(request, response);
         // Implement custom handling of GET requests
         boolean responseIsText = true;
 
