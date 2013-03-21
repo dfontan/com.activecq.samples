@@ -15,22 +15,19 @@
  */
 package com.activecq.samples.eventhandlers;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import org.apache.felix.scr.annotations.*;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.event.EventUtil;
-import org.apache.sling.event.JobProcessor;
+import org.apache.sling.event.jobs.JobProcessor;
 import org.apache.sling.event.jobs.JobUtil;
 import org.osgi.framework.Constants;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventHandler;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 @Component(
     label="ActiveCQ Samples - Event Publisher",
