@@ -101,6 +101,11 @@
                         <Bundle-Name>ActiveCQ ${project.parent.name}</Bundle-Name>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 
+                        <!-- Import custom nodetypes -->
+                        <Sling-Nodetypes>
+                            SLING-INF/nodetypes/nodetypes.cnd
+                        </Sling-Nodetypes>
+
                         <!--<Fragment-Host>com.day.crx.sling.server</Fragment-Host>-->
                         <Sling-Test-Regexp>.*Test</Sling-Test-Regexp>
 

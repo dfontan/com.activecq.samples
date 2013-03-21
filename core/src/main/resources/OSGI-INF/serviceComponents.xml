@@ -27,7 +27,6 @@
         <implementation class="com.activecq.samples.eventhandlers.SampleEventHandler"/>
         <service servicefactory="false">
             <provide interface="com.day.cq.jcrclustersupport.ClusterAware"/>
-            <provide interface="org.apache.sling.event.JobProcessor"/>
             <provide interface="org.apache.sling.event.jobs.JobProcessor"/>
             <provide interface="org.osgi.service.event.EventHandler"/>
         </service>
@@ -42,7 +41,6 @@
     <scr:component enabled="true" immediate="true" name="com.activecq.samples.eventhandlers.SampleEventPublisher">
         <implementation class="com.activecq.samples.eventhandlers.SampleEventPublisher"/>
         <service servicefactory="false">
-            <provide interface="org.apache.sling.event.JobProcessor"/>
             <provide interface="org.apache.sling.event.jobs.JobProcessor"/>
             <provide interface="org.osgi.service.event.EventHandler"/>
         </service>
@@ -55,8 +53,12 @@
         <property name="service.pid" value="com.activecq.samples.eventhandlers.SampleEventPublisher"/>
         <reference name="eventAdmin" interface="org.osgi.service.event.EventAdmin" cardinality="1..1" policy="static" bind="bindEventAdmin" unbind="unbindEventAdmin"/>
     </scr:component>
-    <scr:component enabled="true" name="com.activecq.samples.eventhandlers.SampleJcrEventListener" activate="activate" deactivate="deactivate">
+    <scr:component enabled="true" immediate="true" name="com.activecq.samples.eventhandlers.SampleJcrEventListener" activate="activate" deactivate="deactivate">
         <implementation class="com.activecq.samples.eventhandlers.SampleJcrEventListener"/>
+        <service servicefactory="false">
+            <provide interface="javax.jcr.observation.EventListener"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ"/>
         <property name="service.pid" value="com.activecq.samples.eventhandlers.SampleJcrEventListener"/>
         <reference name="repository" interface="org.apache.sling.jcr.api.SlingRepository" cardinality="1..1" policy="static" bind="bindRepository" unbind="unbindRepository"/>
         <reference name="eventAdmin" interface="org.osgi.service.event.EventAdmin" cardinality="1..1" policy="static" bind="bindEventAdmin" unbind="unbindEventAdmin"/>
@@ -223,7 +225,13 @@
         <service servicefactory="false">
             <provide interface="javax.servlet.Servlet"/>
         </service>
-        <property name="sling.servlet.paths" value="/bin/safe-sample"/>
+        <property name="sling.servlet.paths" value="/services/safe-sample"/>
+        <property name="sling.servlet.selectors">
+            print.a4
+            print
+        </property>
+        <property name="sling.servlet.extensions" value="html"/>
+        <property name="sling.servlet.methods" value="GET"/>
         <property name="service.vendor" type="String" value="ActiveCQ"/>
         <property name="service.pid" value="com.activecq.samples.servlets.SampleSafeMethodsServlet"/>
     </scr:component>
