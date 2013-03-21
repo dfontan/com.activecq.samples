@@ -21,29 +21,54 @@
 }
 */
 
-CQ_Sidekick.getBottomToolbar().add(
+;(function () {
+    // Trick to allow modifications to be added unobtrusively to the Sidekick
+    // otherwise requires overlaying the init.jsp and adding  the core code
+    // after launchSideKick executes
 
-    new CQ.Ext.Button({
-        // This is the CSS class that defines the 16 x 16 icon image (See above)
-        "iconCls": "cq-sidekick-activecq-custom",
+    var updateSidekick = function () {
+        if (typeof CQ_Sidekick === 'undefined') {
+            // Wait for the CQ_Sidekick to get loaded in 1 second increments
+            setTimeout(updateSidekick, 1000);
+        } else if (!CQ_Sidekick.panelsLoaded) {
+            // Wait for the CQ_Sidekick's panels to be loaded
+            // Once the CQ_Sidekick is defined, panels should be loaded very quickly, decrease wait time to 1/4 of a second
+            setTimeout(updateSidekick, 250);
+        } else {
 
-        "tooltip": {
-            "title": "ActiveCQ Bottom Toolbar Button",
-            "text": CQ.I18n.getMessage("Click this button"),
-            "autoHide": true
-        },
+            /** Begin: Code to add the button to the Sidekick **/
 
-        "pressed": false,
-        "enableToggle": true,
-        "toggleGroup": "custom-group",
+            CQ_Sidekick.getBottomToolbar().add(
 
-        "pressed": CQ.WCM.getContentUrl().indexOf(".custom.") > 0,
+                new CQ.Ext.Button({
+                    // This is the CSS class that defines the 16 x 16 icon image (See above)
+                    "iconCls": "cq-sidekick-activecq-custom",
 
-        "handler": function() { alert('The ') },
+                    "tooltip": {
+                        "title": "ActiveCQ Bottom Toolbar Button",
+                        "text": CQ.I18n.getMessage("Click this button"),
+                        "autoHide": true
+                    },
 
-        "scope": this
-    })
-);
+                    "pressed": false,
+                    "enableToggle": true,
+                    "toggleGroup": "custom-group",
 
-// Redraw Sidekick
-CQ_Sidekick.doLayout();
+                    "pressed": CQ.WCM.getContentUrl().indexOf(".custom.") > 0,
+
+                    "handler": function() { alert('The toolbar was clicked') },
+
+                    "scope": this
+                })
+            );
+
+            // Redraw Sidekick
+            CQ_Sidekick.doLayout();
+
+            /** End: Code to add the button to the Sidekick **/
+
+        }
+    }
+
+    updateSidekick();
+})();

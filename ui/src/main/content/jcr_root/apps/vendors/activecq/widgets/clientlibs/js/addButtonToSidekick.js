@@ -14,19 +14,44 @@
  *  limitations under the License.
  */
 
- CQ_Sidekick.addAction({
-    text: "ActiveCQ Sample Action",
-    handler: function() { alert('ActiveCQ Sample Click Handler;'); },
-    context: [ CQ.wcm.Sidekick.PAGE ]
-     /*
-      CQ.wcm.Sidekick.PAGE
-      CQ.wcm.Sidekick.COMPONENTS
-      CQ.wcm.Sidekick.WORKFLOW
-      CQ.wcm.Sidekick.VERSIONING
-      CQ.wcm.Sidekick.INFO
-      */
- });
+;(function () {
+    // Trick to allow modifications to be added unobtrusively to the Sidekick
+    // otherwise requires overlaying the init.jsp and adding  the core code
+    // after launchSideKick executes
 
-// Redraw the sidekick
-CQ_Sidekick.doLayout();
+    var updateSidekick = function () {
+        if (typeof CQ_Sidekick === 'undefined') {
+            // Wait for the CQ_Sidekick to get loaded in 1 second increments
+            setTimeout(updateSidekick, 1000);
+        } else if (!CQ_Sidekick.panelsLoaded) {
+            // Wait for the CQ_Sidekick's panels to be loaded
+            // Once the CQ_Sidekick is defined, panels should be loaded very quickly, decrease wait time to 1/4 of a second
+            setTimeout(updateSidekick, 250);
+        } else {
 
+            /** Begin: Code to add the button to the Sidekick **/
+
+            CQ_Sidekick.addAction({
+                text: "ActiveCQ Sample Action",
+                handler: function () {
+                    alert('ActiveCQ Sample Click Handler;');
+                },
+                context: [ CQ.wcm.Sidekick.PAGE ]
+                /*
+                 CQ.wcm.Sidekick.PAGE
+                 CQ.wcm.Sidekick.COMPONENTS
+                 CQ.wcm.Sidekick.WORKFLOW
+                 CQ.wcm.Sidekick.VERSIONING
+                 CQ.wcm.Sidekick.INFO
+                 */
+            });
+
+            // Redraw the sidekick
+            CQ_Sidekick.doLayout();
+
+            /** End: Code to add the button to the Sidekick **/
+        }
+    }
+
+    updateSidekick();
+})();
