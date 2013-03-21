@@ -16,14 +16,10 @@
 package com.activecq.samples.eventhandlers;
 
 import com.day.cq.jcrclustersupport.ClusterAware;
-import java.util.Dictionary;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.felix.scr.annotations.*;
 import org.apache.sling.event.EventUtil;
-import org.apache.sling.event.JobProcessor;
+import org.apache.sling.event.jobs.JobProcessor;
 import org.apache.sling.event.jobs.JobUtil;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
@@ -32,6 +28,8 @@ import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Dictionary;
 
 /**
  * The <code>DropBoxEventHandler</code> moves files posted to /tmp/dropbox to the appropriate locations:
@@ -88,29 +86,40 @@ public class SampleEventHandler implements JobProcessor, EventHandler, ClusterAw
 
     @Override
 	public void handleEvent(Event event) {
-        // This is the usual course
-        if (EventUtil.isLocal(event)) {
+        boolean handleLocally = false;
+        boolean handleWithMaster = !handleLocally;
+
+        if (!ArrayUtils.contains(event.getPropertyNames(), EventUtil.PROPERTY_DISTRIBUTE)) {
+            // This is the check for a distributed event or not; if this property does not exist, it usually
+            // means that this event handler should process the job, as no other event handlers
+            // will see this event.
+
+            JobUtil.processJob(event, this);
+
+        } else if (handleLocally && EventUtil.isLocal(event)) {
+            // This is a distributed event (first 'if' condition failed)
+
             // If this server created the event
             // then only this server should process the event
 
             // This will call this's process(..) method, passing in the event obj
             // JobUtil.processJob(..) sends/checks for an ack for this job
+
+            // Jobs guarantee the event will be processed (though doesnt guarentee the job will be processed SUCCESSFULLY)
             JobUtil.processJob(event, this);
-        }
 
-        // If a event is distributed, you may only want to execute it the Master node in
-        // the cluster. This can be achieved by doing something like this.
+        } else if(handleWithMaster && this.isMaster) {
+            // This is a distributed event (first 'if' condition failed)
 
-        // The handleEvent(..) method would have to be adjusted accordingly to allow
-        // potential non-local events through.
-        /*
-        if(ArrayUtils.contains(event.getPropertyNames(), EventUtil.PROPERTY_DISTRIBUTE)) {
-            if(!this.isMaster) {
-                return;
-            }
+            // If a event is distributed, you may only want to execute it the Master node in
+            // the cluster.
+
+            JobUtil.processJob(event, this);
+        } else {
+            // DO NOTHING!
         }
-        */
 	}
+
 
     @Override
 	public boolean process(Event event) {
@@ -131,6 +140,7 @@ public class SampleEventHandler implements JobProcessor, EventHandler, ClusterAw
 
     @Override
     public void unbindRepository() {
+        this.isMaster = false;
     }
 
     /** OSGi Component Methods **/
