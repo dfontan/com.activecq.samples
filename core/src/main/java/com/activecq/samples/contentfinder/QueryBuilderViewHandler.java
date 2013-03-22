@@ -64,8 +64,8 @@ import java.util.Set;
         )
 })
 @Service
-public class SampleViewHandler extends ViewHandler {
-    private static final Logger log = LoggerFactory.getLogger(SampleViewHandler.class);
+public class QueryBuilderViewHandler extends ViewHandler {
+    private static final Logger log = LoggerFactory.getLogger(QueryBuilderViewHandler.class);
     private static final String DELIMITER = ",";
 
     public static final int GROUP_PATH = 1;
