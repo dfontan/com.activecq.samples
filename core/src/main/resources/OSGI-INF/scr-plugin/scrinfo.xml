@@ -254,7 +254,7 @@
         <property name="service.pid" value="com.activecq.samples.servlets.SampleAllMethodsServlet" private="false"/>
     </scr:component>
     <scr:component enabled="true" immediate="true" name="com.activecq.samples.contentfinder.SampleViewHandler">
-        <implementation class="com.activecq.samples.contentfinder.SampleViewHandler"/>
+        <implementation class="com.activecq.samples.contentfinder.QueryBuilderViewHandler"/>
         <service servicefactory="false">
             <provide interface="javax.servlet.Servlet"/>
             <provide interface="javax.servlet.ServletConfig"/>
@@ -262,7 +262,7 @@
         </service>
         <property name="sling.servlet.paths" type="String" value="/bin/wcm/contentfinder/qb/view" private="false"/>
         <property name="service.vendor" type="String" value="ActiveCQ" private="false"/>
-        <property name="service.pid" value="com.activecq.samples.contentfinder.SampleViewHandler" private="false"/>
+        <property name="service.pid" value="com.activecq.samples.contentfinder.QueryBuilderViewHandler" private="false"/>
         <reference name="provider" interface="com.day.cq.commons.predicate.PredicateProvider" cardinality="1..1" policy="static" bind="bindProvider" unbind="unbindProvider" checked="true" strategy="event"/>
     </scr:component>
 </components>
