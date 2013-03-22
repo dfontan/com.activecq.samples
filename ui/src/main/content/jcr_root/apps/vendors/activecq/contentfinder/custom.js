@@ -57,13 +57,30 @@
             "url": "/bin/wcm/contentfinder/qb/view.json/content"
         }, {
             "baseParams": {
-                "type": "cq:Page",
+                "type": "dam:Asset",
 
                 "path": "/content/geometrixx,/content/dam",
 
                 "mimeType": "pdf",
 
                 "tags": "marketing:interest/product,geometrixx-outdoors:season/winter"
+
+                /*
+                Alternatively to the normal Content Finder GQL parameters, you can set
+                "querybuilder" : "true"
+
+                key/val pairs for standard querybuilder HTTP API.
+
+                This allows for creating very complex base queries. Note that if a queryString is provided,
+                it will be added to a "fulltext" search query builder predicate. Also, the offset and limits are
+                automatically computed based on the OOTB contentfinder infinite scrolling notation.
+
+                Example:
+                     "querybuilder" : "true",
+                     "type" : "cq:Page",
+                     "tagid" : "marketing:interest/product",
+                     "tagid.property" : "jcr:content/cq:tags"
+                 */
             }
         })
     ]

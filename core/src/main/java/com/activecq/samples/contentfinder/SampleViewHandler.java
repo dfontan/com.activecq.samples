@@ -99,6 +99,10 @@ public class SampleViewHandler extends ViewHandler {
                 map.put(key, request.getParameter(key));
             }
 
+            if(StringUtils.isNotBlank(queryString)) {
+                map.put("fulltext", queryString);
+            }
+
             map.put("p.limit", getLimit(request));
             map.put("p.offset", getOffset(request));
 
