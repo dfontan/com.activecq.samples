@@ -16,7 +16,6 @@
 
 package com.activecq.samples.contentfinder.viewhandler;
 
-import com.activecq.samples.contentfinder.ContentFinderConstants;
 import com.day.cq.search.PredicateGroup;
 import com.day.cq.search.Query;
 import com.day.cq.search.QueryBuilder;

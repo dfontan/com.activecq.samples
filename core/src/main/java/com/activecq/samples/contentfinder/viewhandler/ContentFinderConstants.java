@@ -12,7 +12,7 @@ public class ContentFinderConstants {
 
     public static final String CF_TYPE = "type";
     public static final String CF_PATH = "path";
-    public static final String CF_FULLTEXT = "fulltext";
+    public static final String CF_FULLTEXT = "query";
     public static final String CF_MIMETYPE = "mimeType";
     public static final String CF_ORDER = "order";
     public static final String CF_LIMIT = "limit";
@@ -25,6 +25,7 @@ public class ContentFinderConstants {
     public static final int GROUP_NAME = 3;
     public static final int GROUP_MIMETYPE = 4;
     public static final int GROUP_TAGS = 5;
+    public static final int GROUP_FULLTEXT = 6;
 
     public static final int GROUP_ORDERBY_USERDEFINED = 110;
     public static final int GROUP_ORDERBY_SCORE = 100;

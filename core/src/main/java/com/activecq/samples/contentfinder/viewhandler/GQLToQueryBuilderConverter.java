@@ -1,9 +1,9 @@
 package com.activecq.samples.contentfinder.viewhandler;
 
-import com.activecq.samples.contentfinder.ContentFinderConstants;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.dam.api.DamConstants;
 import com.day.cq.search.Predicate;
+import com.day.cq.search.eval.FulltextPredicateEvaluator;
 import com.day.cq.search.eval.JcrPropertyPredicateEvaluator;
 import com.day.cq.wcm.api.NameConstants;
 import org.apache.commons.lang.ArrayUtils;
@@ -38,6 +38,7 @@ public class GQLToQueryBuilderConverter {
     public static final int GROUP_NAME = ContentFinderConstants.GROUP_NAME;
     public static final int GROUP_MIMETYPE = ContentFinderConstants.GROUP_MIMETYPE;
     public static final int GROUP_TAGS = ContentFinderConstants.GROUP_TAGS;
+    public static final int GROUP_FULLTEXT = ContentFinderConstants.GROUP_FULLTEXT;
 
     public static final int GROUP_PROPERTY_USERDEFINED = ContentFinderConstants.GROUP_PROPERTY_USERDEFINED;
 
@@ -110,6 +111,7 @@ public class GQLToQueryBuilderConverter {
 
                 count++;
             }
+
         } else {
 
             final boolean isPage = isPage(get(request, CF_TYPE));
@@ -154,21 +156,24 @@ public class GQLToQueryBuilderConverter {
         if (has(request, CF_TAGS)) {
             final String prefix = getPropertyPrefix(request);
 
-            map.put(GROUP_TAGS + "_group.p.or", "true");
+            final String groupId = GROUP_TAGS + "_group";
+            final String tagProperty = prefix + NameConstants.PN_TAGS;
+
+            map.put(groupId + ".p.or", "true");
 
             if (hasMany(request, CF_TAGS)) {
                 final String[] tags = getAll(request, CF_TAGS);
 
                 int i = 1;
                 for (final String tag : tags) {
-                    String tagGroup = GROUP_TAGS + "_group." + i + "_tagid";
-                    map.put(tagGroup.concat(".property"), (prefix + NameConstants.PN_TAGS));
+                    map.put(groupId + "." + i + "_property", tagProperty);
+                    map.put(groupId + "." + i + "_tagid", tag);
 
-                    map.put(tagGroup, tag);
                     i++;
                 }
             } else {
-                map.put(GROUP_TAGS + "_group.1_tagid", get(request, CF_TAGS));
+                map.put(groupId + ".1_property", tagProperty);
+                map.put(groupId + ".1_tagid", get(request, CF_TAGS));
             }
         }
 
@@ -179,7 +184,10 @@ public class GQLToQueryBuilderConverter {
     public static Map<String, String> addFulltext(final SlingHttpServletRequest request,
                                               Map<String, String> map, final String queryString) {
         if (StringUtils.isNotBlank(queryString)) {
-            map.put(CF_FULLTEXT, queryString);
+            final String groupId = GROUP_FULLTEXT + "_group";
+
+            map.put(groupId + "." + FulltextPredicateEvaluator.FULLTEXT, queryString);
+            map.put(groupId + ".p.or", "true");
         }
         return map;
     }

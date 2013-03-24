@@ -1,3 +1,4 @@
+/* http://dev.day.com/docs/en/cq/current/widgets-api/index.html?class=CQ.wcm.ContentFinderTab */
 {
     "tabTip"
 :
@@ -13,23 +14,42 @@
     "contentfindertab",
         "ranking"
 :
-    30,
+    1,
         "allowedPaths"
 :
     [
         "/content/*",
         "/etc/scaffolding/*"
     ],
-        "items"
+        getParams
+:
+    function () {
+        return {
+            "jcr:content/jcr:title": "Square",
+            "name": "*quare"
+        };
+    }
+
+,
+    "items"
 :
     [
+
         CQ.wcm.ContentFinderTab.getQueryBoxConfig({
             "id": "cfTab-Custom-QueryBox",
             "items": [
                 CQ.wcm.ContentFinderTab.getSuggestFieldConfig({"url": "/bin/wcm/contentfinder/suggestions.json/content"})
             ]
         }),
+
+        /* Result Box Config renders the infinite scrolling lists of results */
+
         CQ.wcm.ContentFinderTab.getResultsBoxConfig({
+            "id": "cfTab-Custom-resultBox",
+
+            "disableContinuousLoading": true,
+
+
             /* UPDATE THE DD GROUPS TO SUPPORT DRAG AND DROP */
 
             "itemsDDGroups": [CQ.wcm.EditBase.DD_GROUP_ASSET,
@@ -37,6 +57,12 @@
                 CQ.wcm.EditBase.DD_GROUP_DEFAULT,
                 CQ.wcm.EditBase.DD_GROUP_PAGE,
                 CQ.wcm.EditBase.DD_GROUP_PARAGRAPH],
+
+            "itemsDDNewParagraph": {
+                "path": "foundation/components/download",
+                "propertyName": "./fileReference"
+            },
+
             "items": {
                 "tpl": '<tpl for=".">' +
                     '<div class="cq-cft-search-item" title="{pathEncoded}" ondblclick="CQ.wcm.ContentFinder.loadContentWindow(\'{[CQ.HTTP.encodePath(values.path)]}.html\');">' +
@@ -51,36 +77,34 @@
                 "itemSelector": CQ.wcm.ContentFinderTab.DETAILS_ITEMSELECTOR
             },
             "tbar": [
-                CQ.wcm.ContentFinderTab.REFRESH_BUTTON
+                CQ.wcm.ContentFinderTab.REFRESH_BUTTON,
+                "->",
+                {
+                    "xtype": "button",
+                    "id": "event-btn",
+                    "cls": "cq-btn-thumbs cq-cft-dataview-btn",
+                    "iconCls": "cq-cft-dataview-event",
+                    "tooltip": { "text": CQ.I18n.getMessage("Test") },
+                    "enableToggle": true,
+                    "pressed": false,
+                    "toggleHandler": function (button, pressed) {
+                        var tab = this.findParentByType("contentfindertab");
+                        var suggest = tab.findByType("suggestfield")[0];
+                        tab.dataView.store.baseParams['jcr:content/cq:template'] = (pressed) ? "/apps/geometrixx/templates/contentpage" : "";
+                        suggest.search();
+
+                        CQ.Ext.getCmp('conversion-btn').toggle(false, true);
+                        CQ.Ext.getCmp('traffic-btn').toggle(false, true);
+                    }
+                }
             ]
         }, {
             "url": "/bin/wcm/contentfinder/qb/view.json/content"
         }, {
+            /* Params to include in all searchs */
             "baseParams": {
-                "type": "dam:Asset",
-
-                "path": "/content/geometrixx,/content/dam",
-
-                "mimeType": "pdf",
-
-                "tags": "marketing:interest/product,geometrixx-outdoors:season/winter"
-
-                /*
-                Alternatively to the normal Content Finder GQL parameters, you can set
-                "querybuilder" : "true"
-
-                key/val pairs for standard querybuilder HTTP API.
-
-                This allows for creating very complex base queries. Note that if a queryString is provided,
-                it will be added to a "fulltext" search query builder predicate. Also, the offset and limits are
-                automatically computed based on the OOTB contentfinder infinite scrolling notation.
-
-                Example:
-                     "querybuilder" : "true",
-                     "type" : "cq:Page",
-                     "tagid" : "marketing:interest/product",
-                     "tagid.property" : "jcr:content/cq:tags"
-                 */
+                "_ctqb": "true",
+                "type": "cq:Page"
             }
         })
     ]
