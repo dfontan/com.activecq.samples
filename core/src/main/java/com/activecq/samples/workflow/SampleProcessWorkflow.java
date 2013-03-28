@@ -21,22 +21,19 @@ import com.day.cq.workflow.exec.WorkItem;
 import com.day.cq.workflow.exec.WorkflowData;
 import com.day.cq.workflow.exec.WorkflowProcess;
 import com.day.cq.workflow.metadata.MetaDataMap;
-import java.util.Arrays;
-import java.util.logging.Level;
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import org.apache.felix.scr.annotations.*;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.util.Arrays;
+import java.util.logging.Level;
 
 /**
  *
@@ -84,7 +81,9 @@ public class SampleProcessWorkflow implements WorkflowProcess {
 
     @Override
     public void execute(WorkItem workItem, WorkflowSession workflowSession, MetaDataMap args) throws WorkflowException {
-        WorkflowData workflowData = workItem.getWorkflowData();
+        // Get the Workflow data (the data that is being passed through for this work item)
+        final WorkflowData workflowData = workItem.getWorkflowData();
+
         final String type = workflowData.getPayloadType();
 
         // Check if the payload is a path in the JCR
@@ -92,7 +91,7 @@ public class SampleProcessWorkflow implements WorkflowProcess {
 
         Session session = workflowSession.getSession();
         // Get the path to the JCR resource from the payload
-        String path = workflowData.getPayload().toString();
+        final String path = workflowData.getPayload().toString();
 
         // Get data from a previous WF Step
         String previouslySetVal = getPersistedData(workItem, "set-in-previous-wf-step", "a default value");
