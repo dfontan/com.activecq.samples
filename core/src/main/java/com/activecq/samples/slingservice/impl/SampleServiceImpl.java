@@ -25,7 +25,7 @@ import org.osgi.service.component.ComponentContext;
 import java.util.Map;
 
 @Component(
-    label = "ActiveCQ Samples - Service",
+    label = "ActiveCQ Samples - Sample Basic Service",
 description = "Sample implementation of a service.",
 metatype = true,
 immediate = false)
