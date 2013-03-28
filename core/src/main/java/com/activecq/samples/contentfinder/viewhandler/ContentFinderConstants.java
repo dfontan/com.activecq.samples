@@ -36,7 +36,7 @@ public class ContentFinderConstants {
     public static final int DEFAULT_OFFSET = 0;
     public static final int DEFAULT_LIMIT = 20;
 
-    public static final String[] QUERYBUILDER_BLACKLIST = new String[] { "_dc", "ck", "mimeType", "_charset_", "query", CONVERT_TO_QUERYBUILDER_KEY };
-    public static final String[] PROPERTY_BLACKLIST = new String[] { "_dc", "ck", "_charset_", "query", CONVERT_TO_QUERYBUILDER_KEY };
+    public static final String[] QUERYBUILDER_BLACKLIST = new String[]{"_dc", "ck", "mimeType", "_charset_", "query", CONVERT_TO_QUERYBUILDER_KEY};
+    public static final String[] PROPERTY_BLACKLIST = new String[]{"_dc", "ck", "_charset_", "query", CONVERT_TO_QUERYBUILDER_KEY};
 
 }

@@ -16,7 +16,13 @@
 package com.activecq.samples.slingservice.impl;
 
 import com.activecq.samples.slingservice.SampleService;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
@@ -25,17 +31,17 @@ import org.osgi.service.component.ComponentContext;
 import java.util.Map;
 
 @Component(
-    label = "ActiveCQ Samples - Sample Basic Service",
-description = "Sample implementation of a service.",
-metatype = true,
-immediate = false)
+        label = "Samples - Basic Service",
+        description = "Sample implementation of a service.",
+        metatype = true,
+        immediate = false)
 @Properties({
-    @Property(
-        label = "Vendor",
-        name = Constants.SERVICE_VENDOR,
-        value = "ActiveCQ",
-        propertyPrivate = true
-    )
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        )
 })
 @Service
 public class SampleServiceImpl implements SampleService {

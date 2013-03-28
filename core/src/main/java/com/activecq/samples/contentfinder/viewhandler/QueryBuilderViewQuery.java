@@ -30,7 +30,7 @@ public class QueryBuilderViewQuery implements ViewQuery {
     public Collection<com.day.cq.wcm.core.contentfinder.Hit> execute() {
         final List<com.day.cq.wcm.core.contentfinder.Hit> hits = new ArrayList<com.day.cq.wcm.core.contentfinder.Hit>();
 
-        if(this.query == null) {
+        if (this.query == null) {
             return hits;
         }
 
@@ -59,7 +59,7 @@ public class QueryBuilderViewQuery implements ViewQuery {
         final Map<String, Object> map = ContentFinderHitBuilder.buildGenericResult(hit);
         final com.day.cq.wcm.core.contentfinder.Hit cfHit = new com.day.cq.wcm.core.contentfinder.Hit();
 
-        for(final String key : map.keySet()) {
+        for (final String key : map.keySet()) {
             cfHit.set(key, map.get(key));
         }
 

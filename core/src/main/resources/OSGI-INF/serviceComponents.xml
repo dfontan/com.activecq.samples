@@ -37,8 +37,8 @@
         </service>
         <property name="service.vendor" type="String" value="ActiveCQ"/>
         <property name="event.topics" type="String">
-            com/activecq/events/poked
-            com/activecq/samples/*
+            samples/events/poked
+            samples/events/*
         </property>
         <property name="service.pid" value="com.activecq.samples.eventhandlers.SampleEventHandler"/>
         <reference name="eventAdmin" interface="org.osgi.service.event.EventAdmin" cardinality="1..1" policy="static" bind="bindEventAdmin" unbind="unbindEventAdmin"/>
@@ -75,12 +75,12 @@
         </service>
         <property name="service.vendor" type="String" value="ActiveCQ"/>
         <property name="cq.wcm.msm.action.name" type="String" value="sampleLiveAction"/>
-        <property name="cq.wcm.msm.action.title" type="String" value="ActiveCQ Samples - Live Action"/>
+        <property name="cq.wcm.msm.action.title" type="String" value="Samples - Live Action"/>
         <property name="cq.wcm.msm.action.rank" type="Integer" value="10"/>
         <property name="cq.wcm.msm.action.properties" type="String" value="enabled"/>
         <property name="service.pid" value="com.activecq.samples.liveactions.SampleLiveAction"/>
     </scr:component>
-    <scr:component enabled="true" name="com.activecq.samples.querybuilder.SampleJsonHitWriter" factory="com.day.cq.search.writer.ResultHitWriter/activecq-sample">
+    <scr:component enabled="true" name="com.activecq.samples.querybuilder.SampleJsonHitWriter" factory="com.day.cq.search.writer.ResultHitWriter/simple-sample">
         <implementation class="com.activecq.samples.querybuilder.SampleJsonHitWriter"/>
         <property name="service.pid" value="com.activecq.samples.querybuilder.SampleJsonHitWriter"/>
     </scr:component>
@@ -90,7 +90,7 @@
             <provide interface="org.apache.sling.api.resource.ResourceDecorator"/>
         </service>
         <property name="service.vendor" type="String" value="ActiveCQ"/>
-        <property name="prop.resource-types" type="String" value="vendors/activecq/samples/components/fake/slideshow"/>
+        <property name="prop.resource-types" type="String" value="samples/components/fake/slideshow"/>
         <property name="service.pid" value="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator"/>
     </scr:component>
     <scr:component enabled="true" immediate="false" name="com.activecq.samples.slingadapterfactories.SampleAdapterFactory" activate="activate" deactivate="deactivate">

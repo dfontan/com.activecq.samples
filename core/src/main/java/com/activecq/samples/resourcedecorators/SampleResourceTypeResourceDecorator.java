@@ -18,7 +18,12 @@ package com.activecq.samples.resourcedecorators;
 
 import com.activecq.samples.resourcewrappers.SampleSlideshowResourceWrapper;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceDecorator;
 import org.apache.sling.api.resource.ValueMap;
@@ -36,29 +41,29 @@ import java.util.Map;
  * User: david
  */
 @Component(
-        label = "ActiveCQ - Sample Slideshow Resource Decorator",
-        description = "Sample",
+        label = "Samples - Resource Decorator",
+        description = "Sample Sling Resource Decorator",
         metatype = true,
         immediate = false,
         inherit = false)
 @Properties({
         @Property(
-                label="Vendor",
-                name= Constants.SERVICE_VENDOR,
-                value="ActiveCQ",
-                propertyPrivate=true
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
         ),
         @Property(
                 label = "Resource Types",
                 description = "Resource Types to decorate",
-                value = { "vendors/activecq/samples/components/fake/slideshow" },
+                value = {"samples/components/fake/slideshow"},
                 name = "prop.resource-types"
         )
 })
 @Service
 public class SampleResourceTypeResourceDecorator implements ResourceDecorator {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private String[] resourceTypes = new String[] {};
+    private String[] resourceTypes = new String[]{};
 
     @Override
     public Resource decorate(Resource resource) {
@@ -72,7 +77,7 @@ public class SampleResourceTypeResourceDecorator implements ResourceDecorator {
 
            An "accepts(..)" method is a handy abstraction for managing this.
         */
-        if(!accepts(resource, request)) {
+        if (!accepts(resource, request)) {
             // In this sample, only handle resources with
             // sling:resourceType=vendors/activecq/samples/components/fake/slideshow
             return resource;
@@ -103,18 +108,20 @@ public class SampleResourceTypeResourceDecorator implements ResourceDecorator {
      * @return
      */
     private boolean accepts(final Resource resource, final HttpServletRequest request) {
-        if(resource == null)  {
+        if (resource == null) {
             return false;
         }
 
         // Using ResourceUtil.isA(..) will send this into an infinite recursive lookup loop
-        for(final String resourceType : this.resourceTypes) {
+        for (final String resourceType : this.resourceTypes) {
             final ValueMap properties = resource.adaptTo(ValueMap.class);
-            if(properties == null) { return false; }
+            if (properties == null) {
+                return false;
+            }
 
             final String slingResourceType = properties.get(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY, "");
 
-            if(StringUtils.equals(resourceType, slingResourceType)) {
+            if (StringUtils.equals(resourceType, slingResourceType)) {
                 return true;
             }
         }

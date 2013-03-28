@@ -16,7 +16,6 @@
 package com.activecq.samples.slingservice;
 
 /**
- *
  * @author david
  */
 public interface SampleService {

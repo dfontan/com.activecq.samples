@@ -49,7 +49,6 @@ public class ContentFinderHitBuilder {
     }
 
     /**
-     *
      * @param hit
      * @param map
      * @return
@@ -81,7 +80,6 @@ public class ContentFinderHitBuilder {
     }
 
     /**
-     *
      * @param hit
      * @param map
      * @return
@@ -110,7 +108,6 @@ public class ContentFinderHitBuilder {
 
 
     /**
-     *
      * @param hit
      * @param map
      * @return
@@ -195,7 +192,9 @@ public class ContentFinderHitBuilder {
      */
     private static long getSize(final Asset asset) {
         final Rendition original = asset.getOriginal();
-        if (original == null) { return 0; }
+        if (original == null) {
+            return 0;
+        }
         return original.getSize();
     }
 

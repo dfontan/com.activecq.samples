@@ -57,7 +57,7 @@ public class GQLToQueryBuilderConverter {
      */
     public static boolean convertToQueryBuilder(final SlingHttpServletRequest request) {
         return (has(request, ContentFinderConstants.CONVERT_TO_QUERYBUILDER_KEY) &&
-        ContentFinderConstants.CONVERT_TO_QUERYBUILDER_VALUE.equals(get(request, ContentFinderConstants.CONVERT_TO_QUERYBUILDER_KEY)));
+                ContentFinderConstants.CONVERT_TO_QUERYBUILDER_VALUE.equals(get(request, ContentFinderConstants.CONVERT_TO_QUERYBUILDER_KEY)));
     }
 
 
@@ -96,7 +96,7 @@ public class GQLToQueryBuilderConverter {
                 final String orderGroupId = String.valueOf(GROUP_ORDERBY_USERDEFINED + count) + "_group";
                 boolean sortAsc = false;
 
-                if(StringUtils.startsWith(value, "-")) {
+                if (StringUtils.startsWith(value, "-")) {
                     sortAsc = false;
                     value = StringUtils.removeStart(value, "-");
                 } else if (StringUtils.startsWith(value, "+")) {
@@ -182,7 +182,7 @@ public class GQLToQueryBuilderConverter {
 
 
     public static Map<String, String> addFulltext(final SlingHttpServletRequest request,
-                                              Map<String, String> map, final String queryString) {
+                                                  Map<String, String> map, final String queryString) {
         if (StringUtils.isNotBlank(queryString)) {
             final String groupId = GROUP_FULLTEXT + "_group";
 
@@ -199,7 +199,7 @@ public class GQLToQueryBuilderConverter {
         }
 
         if (has(request, CF_LIMIT)) {
-            final String limit =  String.valueOf(getLimit(request));
+            final String limit = String.valueOf(getLimit(request));
             map.put("p.limit", limit);
         } else {
             map.put("p.limit", String.valueOf(DEFAULT_LIMIT));
@@ -210,7 +210,7 @@ public class GQLToQueryBuilderConverter {
 
 
     public static Map<String, String> addProperty(final SlingHttpServletRequest request, Map<String, String> map, final String requestKey, final int count) {
-        if(!ArrayUtils.contains(ContentFinderConstants.PROPERTY_BLACKLIST, requestKey)) {
+        if (!ArrayUtils.contains(ContentFinderConstants.PROPERTY_BLACKLIST, requestKey)) {
             map = putProperty(request, map, requestKey, JcrPropertyPredicateEvaluator.PROPERTY, (GROUP_PROPERTY_USERDEFINED + count), true);
         } else {
             log.debug("Rejecting property [ {} ] due to blacklist match", requestKey);
@@ -232,7 +232,9 @@ public class GQLToQueryBuilderConverter {
      */
     public static boolean hasMany(SlingHttpServletRequest request, String key) {
         final RequestParameter rp = request.getRequestParameter(key);
-        if (rp == null) { return false; }
+        if (rp == null) {
+            return false;
+        }
         return getAll(request, key).length > 1;
     }
 
@@ -271,7 +273,9 @@ public class GQLToQueryBuilderConverter {
      */
     public static String[] getAll(SlingHttpServletRequest request, String key) {
         final RequestParameter rp = request.getRequestParameter(key);
-        if (rp == null) { return new String[0]; }
+        if (rp == null) {
+            return new String[0];
+        }
         return StringUtils.split(rp.getString(), DELIMITER);
     }
 
@@ -338,14 +342,13 @@ public class GQLToQueryBuilderConverter {
 
 
     /**
-     *
      * @param map
-     * @param predicateValue => jcr:title
-     * @param predicate => property
+     * @param predicateValue  => jcr:title
+     * @param predicate       => property
      * @param predicateSuffix => value
-     * @param values => [Square, Triangle]
-     * @param group => ID
-     * @param or => true/false
+     * @param values          => [Square, Triangle]
+     * @param group           => ID
+     * @param or              => true/false
      * @return
      */
     public static Map<String, String> putAll(Map<String, String> map, String predicate, String predicateValue, String predicateSuffix, String[] values, int group, boolean or) {
@@ -438,7 +441,7 @@ public class GQLToQueryBuilderConverter {
             final String value = get(request, CF_LIMIT);
             final String[] limits = StringUtils.split(value, "..");
 
-            if(value.matches("(\\d)+\\.\\.(\\d)+")) {
+            if (value.matches("(\\d)+\\.\\.(\\d)+")) {
                 // 10..20
                 return Integer.parseInt(limits[0]);
             } else if (value.matches("(\\d)+\\.\\.(\\d)+")) {

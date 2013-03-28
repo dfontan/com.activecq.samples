@@ -27,14 +27,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * SampleSlideshowResourceWrapper srw = new SampleSlideshowResourceWrapper(resource);
-
- *
  * User: david
  */
 public class SampleSlideshowResourceWrapper extends ResourceWrapper {
     private Resource resource;
+
     /**
      * Creates a new wrapper instance delegating all method calls to the given
      * <code>resource</code>.
@@ -46,14 +43,16 @@ public class SampleSlideshowResourceWrapper extends ResourceWrapper {
 
     /**
      * Get the number of child nodes. It is expected all child nodes are Image nodes.
-     *
+     * <p/>
      * A real implementation can check child nodes for appropriate resourceTypes, etc. qualifying each resource as valid Image resource.
      *
      * @return
      */
     public int getSize() {
         List<Resource> children = IteratorUtils.toList(this.resource.listChildren());
-        if(children == null) { return 0; }
+        if (children == null) {
+            return 0;
+        }
         return children.size();
     }
 
@@ -65,9 +64,13 @@ public class SampleSlideshowResourceWrapper extends ResourceWrapper {
      */
     public ImageResource getSlide(int index) {
         List<Resource> children = IteratorUtils.toList(this.resource.listChildren());
-        if(children == null || children.size() < 1) { return null; }
-        else if (index < 0) { index = 0; }
-        else if (index >= children.size()) { index = children.size() - 1; }
+        if (children == null || children.size() < 1) {
+            return null;
+        } else if (index < 0) {
+            index = 0;
+        } else if (index >= children.size()) {
+            index = children.size() - 1;
+        }
 
         return new ImageResource(children.get(index));
     }

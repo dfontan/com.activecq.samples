@@ -22,7 +22,11 @@ import com.day.cq.workflow.exec.WorkflowData;
 import com.day.cq.workflow.exec.WorkflowProcess;
 import com.day.cq.workflow.metadata.MetaDataMap;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
@@ -36,48 +40,53 @@ import java.util.Arrays;
 import java.util.logging.Level;
 
 /**
- *
  * @author david
  */
 
 @Component(
-    label="ActiveCQ Samples - CQ Workflow Process",
-    description="Sample Workflow Process implementation",
-    metatype=false,
-    immediate=false
+        label = "Samples - CQ Workflow Process",
+        description = "Sample Workflow Process implementation",
+        metatype = false,
+        immediate = false
 )
 @Properties({
-    @Property(
-        name=Constants.SERVICE_DESCRIPTION,
-        value="Sample Workflow Process implementation.",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Workflow Label",
-        name="process.label",
-        value="Sample Workflow Process",
-        description="Label which will appear in the Adobe CQ Workflow interface"
-    )
+        @Property(
+                name = Constants.SERVICE_DESCRIPTION,
+                value = "Sample Workflow Process implementation.",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Workflow Label",
+                name = "process.label",
+                value = "Sample Workflow Process",
+                description = "Label which will appear in the Adobe CQ Workflow interface"
+        )
 })
 @Service
 public class SampleProcessWorkflow implements WorkflowProcess {
 
-    /** OSGi Service References **/
+    /**
+     * OSGi Service References *
+     */
 
     @Reference
     ResourceResolverFactory resourceResolverFactory;
 
-    /** Fields **/
+    /**
+     * Fields *
+     */
 
     private static final Logger log = LoggerFactory.getLogger(SampleProcessWorkflow.class);
 
-    /** Work flow execute method **/
+    /**
+     * Work flow execute method *
+     */
 
     @Override
     public void execute(WorkItem workItem, WorkflowSession workflowSession, MetaDataMap args) throws WorkflowException {
@@ -87,7 +96,9 @@ public class SampleProcessWorkflow implements WorkflowProcess {
         final String type = workflowData.getPayloadType();
 
         // Check if the payload is a path in the JCR
-        if(!StringUtils.equals(type, "JCR_PATH")) { return; }
+        if (!StringUtils.equals(type, "JCR_PATH")) {
+            return;
+        }
 
         Session session = workflowSession.getSession();
         // Get the path to the JCR resource from the payload
@@ -124,11 +135,15 @@ public class SampleProcessWorkflow implements WorkflowProcess {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    /** Helper methods **/
+    /**
+     * Helper methods *
+     */
 
     private <T> boolean persistData(WorkItem workItem, WorkflowSession workflowSession, String key, T val) {
         WorkflowData data = workItem.getWorkflow().getWorkflowData();
-        if(data.getMetaDataMap() == null) { return false; }
+        if (data.getMetaDataMap() == null) {
+            return false;
+        }
 
         data.getMetaDataMap().put(key, val);
         workflowSession.updateWorkflowData(workItem.getWorkflow(), data);

@@ -16,7 +16,11 @@
 package com.activecq.samples.eventhandlers;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.event.EventUtil;
 import org.apache.sling.event.jobs.JobProcessor;
@@ -30,36 +34,36 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 @Component(
-    label="ActiveCQ Samples - Event Publisher",
-    description="",
-    immediate=true,
-    metatype=false
+        label = "Samples - Custom Event Publisher",
+        description = "",
+        immediate = true,
+        metatype = false
 )
 @Properties({
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Event Topics",
-        value={
-            org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_ADDED,
-            org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_CHANGED,
-            org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_REMOVED
-        },
-        description="[Required] Sling Event Topics this event handler will to respond to.",
-        name="event.topics",
-        propertyPrivate=true
-    )
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Event Topics",
+                value = {
+                        org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_ADDED,
+                        org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_CHANGED,
+                        org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_REMOVED
+                },
+                description = "[Required] Sling Event Topics this event handler will to respond to.",
+                name = "event.topics",
+                propertyPrivate = true
+        )
 })
 @Service
 public class SampleEventPublisher implements JobProcessor, EventHandler {
-    public static final String JOB_TOPIC_POKED = "com/activecq/samples/poked";
+    public static final String JOB_TOPIC_POKED = "samples/events/poked";
 
     @Reference
-	private EventAdmin eventAdmin;
+    private EventAdmin eventAdmin;
 
     @Override
     public void handleEvent(Event event) {
@@ -71,14 +75,15 @@ public class SampleEventPublisher implements JobProcessor, EventHandler {
             // JobUtil.processJob(..) sends/checks for an ack for this job
             JobUtil.processJob(event, this);
             return;
-	    }    }
+        }
+    }
 
     @Override
     public boolean process(Event event) {
         final String path = (String) event.getProperty(SlingConstants.PROPERTY_PATH);
         final String resourceType = (String) event.getProperty(SlingConstants.PROPERTY_RESOURCE_TYPE);
 
-        if(!StringUtils.startsWith(path, "/content/samples")) {
+        if (!StringUtils.startsWith(path, "/content/samples")) {
             // Only handle events here from resources under /content/samples
             return true;
         }
@@ -110,7 +115,7 @@ public class SampleEventPublisher implements JobProcessor, EventHandler {
         // Create event object;
         Event pokedEvent;
 
-        if(isDistributableEvent) {
+        if (isDistributableEvent) {
             // Send this event to other servers in the cluster; This is rarely
             // what you want.
             pokedEvent = EventUtil.createDistributableEvent(EventUtil.TOPIC_JOB, eventProperties);
@@ -121,7 +126,7 @@ public class SampleEventPublisher implements JobProcessor, EventHandler {
         }
 
         // Send the new event out into the world to be handled
-        if(sendAsync) {
+        if (sendAsync) {
             // send ASYNCHRONOUSLY
             // This is the usual method
             eventAdmin.postEvent(pokedEvent);

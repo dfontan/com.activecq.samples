@@ -15,22 +15,7 @@
  */
 package com.activecq.samples.loginmodule;
 
-import java.security.Principal;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Level;
-
-import javax.jcr.Credentials;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
-import javax.security.auth.Subject;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.login.FailedLoginException;
-import javax.security.auth.login.LoginException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.apache.jackrabbit.api.security.user.AuthorizableExistsException;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.api.security.user.UserManager;
@@ -40,6 +25,18 @@ import org.apache.jackrabbit.core.security.authentication.Authentication;
 import org.apache.jackrabbit.core.security.authentication.token.TokenBasedAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.Credentials;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.security.auth.Subject;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.login.FailedLoginException;
+import javax.security.auth.login.LoginException;
+import java.security.Principal;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
 
 public class SampleLoginModule extends AbstractLoginModule {
 
@@ -65,13 +62,13 @@ public class SampleLoginModule extends AbstractLoginModule {
     /**
      * Handles the impersonation of the Principal using the provided
      * Credentials.
-     *
+     * <p/>
      * Impersonation only occurs if the provided Credentials allow for the
      * impersonation of the Principal.
      *
-     * @param principalToImpersonate Principal to impersonate
+     * @param principalToImpersonate  Principal to impersonate
      * @param impersonatorCredentials Credentials used to create the
-     * impersonation subject.
+     *                                impersonation subject.
      * @return
      * @throws RepositoryException
      * @throws LoginException
@@ -96,10 +93,10 @@ public class SampleLoginModule extends AbstractLoginModule {
     /**
      * Principal is the CRX Principal that the Credentials should be
      * authenticated against.
-     *
+     * <p/>
      * Principal is retrieved from getPrincipal(Credentials credentials) using
      * the Credentials UserId field.
-     *
+     * <p/>
      * Get the Authentication object
      *
      * @param principal
@@ -123,8 +120,6 @@ public class SampleLoginModule extends AbstractLoginModule {
      * Get the CRX Principal the credentials should be authenticated against.
      * This is NOT the authentication step, and usually involves looking up the
      * Principal in CRX based on the credentials UserId.
-     *
-     *
      *
      * @param credentials
      * @return
@@ -150,18 +145,17 @@ public class SampleLoginModule extends AbstractLoginModule {
     /**
      * commit() is invoked by login() if LoginContext's overall authentication
      * succeeded.
-     *
+     * <p/>
      * If authentication has succeeded then this method associates relevant
      * Principals and Credentials (instance fields) with this objects Subject
      * (instance field).
-     *
+     * <p/>
      * The login is considers as succeeded if the credentials field is set. If
      * there is no principal set the login is considered as ignored.
-     *
+     * <p/>
      * The implementation stores the principal associated to the UserID and all
      * the Groups it is member of with the Subject and in addition adds an
      * instance of Credentials to the Subject's public credentials.
-     *
      *
      * @return
      * @throws LoginException

@@ -39,18 +39,24 @@ public interface ClientContextBuilder {
     }
 
     public String getAuthorizableId(SlingHttpServletRequest request);
+
     public String getPath(SlingHttpServletRequest request);
 
     public JSONObject getJSON(SlingHttpServletRequest request, ClientContextStore store) throws JSONException, RepositoryException;
+
     public JSONObject xssProtect(JSONObject json, String... whiteList) throws JSONException;
+
     public boolean isSystemProperty(String key);
 
     public String getGenericInitJS(SlingHttpServletRequest request, ClientContextStore store) throws JSONException, RepositoryException;
+
     public String getInitJavaScript(JSONObject json, ClientContextStore store);
+
     public String getInitJavaScript(JSONObject json, String manager);
 
     public AuthorizableResolution getAuthorizableResolution(SlingHttpServletRequest request);
 
     public ResourceResolver getResourceResolverFor(final String authorizableId) throws LoginException, RepositoryException;
+
     public void closeResourceResolverFor(ResourceResolver resourceResolver);
 }

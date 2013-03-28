@@ -39,7 +39,7 @@ The name of the factory must be the fully qualified name of this interface plus 
 
 An example call to this Sample HitWriter might look like:
 
-    http://localhost:4502/bin/querybuilder.json?...&p.hitwriter=activecq-sample
+    http://localhost:4502/bin/querybuilder.json?...&p.hitwriter=simple-sample
 
 Resulting JSON object would look like:
 
@@ -54,7 +54,11 @@ Resulting JSON object would look like:
     ]
 */
 
-@Component(metatype=false, factory="com.day.cq.search.writer.ResultHitWriter/activecq-sample")
+@Component(
+        label = "Samples - QueryBuilder ResultHitWriter",
+        metatype = false,
+        factory = "com.day.cq.search.writer.ResultHitWriter/simple-sample"
+)
 public class SampleJsonHitWriter implements ResultHitWriter {
 
     @Override
@@ -68,7 +72,7 @@ public class SampleJsonHitWriter implements ResultHitWriter {
 
         // Write node properties from the hit result node (or relative nodes) to the JSON result object
         final String property1 = "jcr:content/jcr:title";
-        if(node.hasProperty(property1)) {
+        if (node.hasProperty(property1)) {
             final Property property = node.getProperty(property1);
             // You have full control over the names/values of the JSON key/value pairs returned.
             // These do not have to match node names

@@ -26,7 +26,11 @@ import com.day.cq.wcm.api.WCMMode;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -47,17 +51,17 @@ import java.util.List;
 import java.util.Map;
 
 @Component(
-        label="ActiveCQ Samples - Client Context Builder",
-        description= "Service to build out custom Client Contexts",
-        metatype=false,
-        immediate=true
+        label = "Samples - Client Context Builder",
+        description = "Service to build out custom Client Contexts",
+        metatype = false,
+        immediate = true
 )
 @Properties({
         @Property(
-                label="Vendor",
-                name= Constants.SERVICE_VENDOR,
-                value="ActiveCQ",
-                propertyPrivate=true
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
         )
 })
 @Service
@@ -79,7 +83,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
     @Override
     public JSONObject getJSON(SlingHttpServletRequest request,
                               ClientContextStore store) throws JSONException, RepositoryException {
-        if(store.handleAnonymous() && isAnonymous(request)) {
+        if (store.handleAnonymous() && isAnonymous(request)) {
             log.debug("Get Anonymous JSON");
             return store.getAnonymousJSON(request);
         } else {
@@ -94,9 +98,9 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
         final boolean useWhiteList = !ArrayUtils.isEmpty(whitelist);
         log.debug("Use Whitelist: " + !ArrayUtils.isEmpty(whitelist));
 
-        for(final String key : keys) {
+        for (final String key : keys) {
             log.debug("XSS Key: " + key);
-            if(!useWhiteList || (useWhiteList && !ArrayUtils.contains(whitelist, key))) {
+            if (!useWhiteList || (useWhiteList && !ArrayUtils.contains(whitelist, key))) {
                 log.debug("XSS -> " + key + XSS_SUFFIX + ": " + xss.filter(ProtectionContext.PLAIN_HTML_CONTENT, json.optString(key)));
                 json.put(key + XSS_SUFFIX, xss.filter(ProtectionContext.PLAIN_HTML_CONTENT, json.optString(key)));
             }
@@ -117,7 +121,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
         String script = "";
         Iterator<String> keys = json.keys();
 
-        while(keys.hasNext()) {
+        while (keys.hasNext()) {
             final String key = keys.next();
             script += getAddInitProperty(manager, key, json.optString(key));
         }
@@ -143,7 +147,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
 
     @Override
     public String getAuthorizableId(SlingHttpServletRequest request) {
-        if(StringUtils.isBlank(request.getQueryString())) {
+        if (StringUtils.isBlank(request.getQueryString())) {
             // If the request does not have Query Params no matter what.
             // We do not want to have a chance of caching non-anonymous personalized content.
             log.debug("QP is blank; Is Anonymous");
@@ -154,7 +158,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
         final AuthorizableResolution authorizableResolution = getAuthorizableResolution(request);
         final WCMMode wcmMode = WCMMode.fromRequest(request);
 
-        if(wcmMode == null || WCMMode.DISABLED.equals(wcmMode)) {
+        if (wcmMode == null || WCMMode.DISABLED.equals(wcmMode)) {
             // Publish mode
             log.debug("Publish WCM Mode");
 
@@ -163,7 +167,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
             // TODO: better way to get AuthorizableId?
             final String userId = resourceResolver.getUserID();
 
-            if(resourceResolver == null || StringUtils.equals(ANONYMOUS, userId)) {
+            if (resourceResolver == null || StringUtils.equals(ANONYMOUS, userId)) {
                 log.debug("Is Anonymous");
                 return ANONYMOUS;
             } else {
@@ -174,16 +178,16 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
             // Author mode; Allow impersonations by author using the Clickstream Cloud
             log.debug("Author WCM Mode");
 
-            if(AuthorizableResolution.IMPERSONATION.equals(authorizableResolution)) {
+            if (AuthorizableResolution.IMPERSONATION.equals(authorizableResolution)) {
                 // Get the authorizableId from the Query Params
                 log.debug("Get authorizableId from QP");
                 return StringUtils.strip(HttpRequestUtil.getParameterOrAttribute(request, AUTHORIZABLE_ID));
-            } else if(AuthorizableResolution.AUTHENTICATION.equals(authorizableResolution)) {
+            } else if (AuthorizableResolution.AUTHENTICATION.equals(authorizableResolution)) {
                 // Check the user Sling has associated with the request
                 final ResourceResolver resourceResolver = request.getResourceResolver();
                 final String userId = resourceResolver.getUserID();
 
-                if(resourceResolver == null || StringUtils.equals(ANONYMOUS, userId)) {
+                if (resourceResolver == null || StringUtils.equals(ANONYMOUS, userId)) {
                     log.debug("Is Anonymous");
                     return ANONYMOUS;
                 } else {
@@ -201,7 +205,9 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
     @Override
     public String getPath(SlingHttpServletRequest request) {
         final String path = StringUtils.stripToNull(HttpRequestUtil.getParameterOrAttribute(request, PATH));
-        if(path == null) { return path; }
+        if (path == null) {
+            return path;
+        }
 
         final ResourceResolver resourceResolver = request.getResourceResolver();
         return resourceResolver.map(request, path);
@@ -218,7 +224,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
 
             return resourceResolver;
         } finally {
-            if(adminSession != null) {
+            if (adminSession != null) {
                 adminSession.logout();
                 adminSession = null;
             }
@@ -228,7 +234,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
     @Override
     public void closeResourceResolverFor(ResourceResolver resourceResolver) {
         try {
-            if(resourceResolver != null) {
+            if (resourceResolver != null) {
                 resourceResolver.close();
             }
         } finally {
@@ -241,7 +247,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
     }
 
     private String getAddInitProperty(String manager, String key, String value) {
-        if(StringUtils.isBlank(manager)) {
+        if (StringUtils.isBlank(manager)) {
             throw new IllegalArgumentException("Client Context Data Manager cannot be blank.");
         } else if (StringUtils.isBlank(key)) {
             throw new IllegalArgumentException("Key cannot be blank.");
@@ -261,10 +267,10 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
     public AuthorizableResolution getAuthorizableResolution(SlingHttpServletRequest request) {
         final WCMMode wcmMode = WCMMode.fromRequest(request);
 
-        if(wcmMode != null && !WCMMode.DISABLED.equals(wcmMode)) {
+        if (wcmMode != null && !WCMMode.DISABLED.equals(wcmMode)) {
             // If in Author Mode
             final String authorizableId = HttpRequestUtil.getParameterOrAttribute(request, AUTHORIZABLE_ID);
-            if(StringUtils.isNotBlank(authorizableId)) {
+            if (StringUtils.isNotBlank(authorizableId)) {
                 log.debug("Use Impersonation");
                 return AuthorizableResolution.IMPERSONATION;
             }

@@ -33,5 +33,6 @@ public interface ClientContextStore {
     public JSONObject getJSON(SlingHttpServletRequest request) throws JSONException, RepositoryException;
 
     public boolean handleAnonymous();
+
     public JSONObject getAnonymousJSON(SlingHttpServletRequest request) throws JSONException;
 }

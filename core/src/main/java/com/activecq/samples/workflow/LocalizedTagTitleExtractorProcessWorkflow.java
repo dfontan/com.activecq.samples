@@ -29,10 +29,17 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.*;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
@@ -42,37 +49,40 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
- *
  * @author david
  */
 
 @Component(
-    label="ActiveCQ Samples - Localized Tag Title Extractor Workflow",
-    description="Sample Workflow Process implementation",
-    metatype=false,
-    immediate=false
+        label = "Samples - Localized Tag Title Extractor Workflow",
+        description = "Sample Workflow Process implementation",
+        metatype = false,
+        immediate = false
 )
 @Properties({
-    @Property(
-        name=Constants.SERVICE_DESCRIPTION,
-        value="Sample Workflow Process implementation - Writes tags titles to index-able property.",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Workflow Label",
-        name="process.label",
-        value="Localized Tag Title Extractor",
-        description="Writes localized tag Titles to a index-able Page/Asset property (tag-titles)."
-    )
+        @Property(
+                name = Constants.SERVICE_DESCRIPTION,
+                value = "Sample Workflow Process implementation - Writes tags titles to index-able property.",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Workflow Label",
+                name = "process.label",
+                value = "Localized Tag Title Extractor",
+                description = "Writes localized tag Titles to a index-able Page/Asset property (tag-titles)."
+        )
 })
 @Service
 public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProcess {
@@ -89,16 +99,22 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
     public static final String PROPERTY_TAG_TITLES = "tag-titles";
     public static final String PROPERTY_CQ_TAGS = "cq:tags";
 
-    /** OSGi Service References **/
+    /**
+     * OSGi Service References *
+     */
 
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
-    /** Fields **/
+    /**
+     * Fields *
+     */
 
     private static final Logger log = LoggerFactory.getLogger(LocalizedTagTitleExtractorProcessWorkflow.class);
 
-    /** Work flow execute method **/
+    /**
+     * Work flow execute method *
+     */
 
     @Override
     public void execute(WorkItem workItem, WorkflowSession workflowSession, MetaDataMap args) throws WorkflowException {
@@ -109,7 +125,9 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
         final String type = workflowData.getPayloadType();
 
         // Check if the payload is a path in the JCR
-        if(!StringUtils.equals(type, "JCR_PATH")) { return; }
+        if (!StringUtils.equals(type, "JCR_PATH")) {
+            return;
+        }
 
         Session session = workflowSession.getSession();
         // Get the path to the JCR resource from the payload
@@ -140,7 +158,7 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
             // custom property "tag-titles" to
             final Resource contentResource = getContentResource(resource);
 
-            if(contentResource == null) {
+            if (contentResource == null) {
                 log.error("Could not find a valid content resource node for payload: {}", resource.getPath());
                 return;
             }
@@ -157,32 +175,32 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
             // This is used to determine if changes if any updates are needed to this node.
             final String[] previousTagTitles = properties.get(PROPERTY_TAG_TITLES, new String[]{});
 
-            if(!ArrayUtils.isEmpty(tags)) {
+            if (!ArrayUtils.isEmpty(tags)) {
                 // Derive the locale
-                if(DamUtil.isAsset(resource)) {
+                if (DamUtil.isAsset(resource)) {
                     // Dam assets use path segments to derive the locale (/content/dam/us/en/...)
                     locale = getLocaleFromPath(resource);
                 } else {
                     // Page's use the jcr:language property accessed via the CQ Page API
                     Page page = resource.adaptTo(Page.class);
-                    if(page != null) {
+                    if (page != null) {
                         locale = page.getLanguage(true);
                     }
                 }
 
                 // Derive the Localized Tag Titles for all tags in the tag hierarchy from the Tags stored in the cq:tags property
                 // This does not remove duplicate titles (different tag trees could repeat titles)
-                if(useUpstream) {
+                if (useUpstream) {
                     newUpstreamTagTitles = tagsToUpstreamLocalizedTagTitles(tags, locale, tagManager);
                     newTagTitles.addAll(newUpstreamTagTitles);
                 }
 
-                if(useDownstream) {
+                if (useDownstream) {
                     newDownstreamTagTitles = tagsToDownstreamLocalizedTagTitles(tags, locale, tagManager, new ArrayList<String>(), 0);
                     newTagTitles.addAll(newDownstreamTagTitles);
                 }
 
-                if(!useUpstream && !useDownstream) {
+                if (!useUpstream && !useDownstream) {
                     newTagTitles.addAll(tagsToLocalizedTagTitles(tags, locale));
                 }
 
@@ -193,7 +211,7 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
                 final Node node = session.getNode(contentResource.getPath());
 
                 // If the currently applied Tag Titles are the same as the derived Tag titles then skip!
-                if(!isSame(newTagTitles.toArray(new String[]{}), previousTagTitles)) {
+                if (!isSame(newTagTitles.toArray(new String[]{}), previousTagTitles)) {
                     // If changes have been made to the Tag Names, then apply to the tag-titles property
                     // on the content resource.
                     node.setProperty(PROPERTY_TAG_TITLES, newUpstreamTagTitles.toArray(new String[newUpstreamTagTitles.size()]));
@@ -206,11 +224,11 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
             } catch (RepositoryException ex) {
                 log.error(ex.getMessage());
             }
-        } catch(LoginException ex) {
+        } catch (LoginException ex) {
             log.error(ex.getMessage());
         } finally {
             // Clean up after yourself please!!!
-            if(resolver != null) {
+            if (resolver != null) {
                 resolver.close();
                 resolver = null;
             }
@@ -228,12 +246,12 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
      * @return
      */
     private boolean isSame(String[] a, String[] b) {
-        if(a.length != b.length) {
+        if (a.length != b.length) {
             return false;
         }
 
-        for(int i = 0; i < a.length; i++) {
-            if(!StringUtils.equals(a[i], b[i])) {
+        for (int i = 0; i < a.length; i++) {
+            if (!StringUtils.equals(a[i], b[i])) {
                 return false;
             }
         }
@@ -244,8 +262,9 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
 
     /**
      * Returns localized Tag Titles for all the ancestor tags to the tags supplied in "tagPaths"
-     *
+     * <p/>
      * Tags in
+     *
      * @param tags
      * @param locale
      * @param tagManager
@@ -254,25 +273,27 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
     private List<String> tagsToUpstreamLocalizedTagTitles(Tag[] tags, Locale locale, TagManager tagManager) {
         List<String> localizedTagTitles = new ArrayList<String>();
 
-        for(final Tag tag : tags){
+        for (final Tag tag : tags) {
             String tagID = tag.getTagID();
 
             boolean isLast = false;
 
             int count = StringUtils.countMatches(tagID, PATH_DELIMITER);
-            while(count >= MIN_TAG_DEPTH && count >= 0) {
+            while (count >= MIN_TAG_DEPTH && count >= 0) {
 
                 final Tag ancestorTag = tagManager.resolve(tagID);
-                if(ancestorTag != null) {
+                if (ancestorTag != null) {
                     localizedTagTitles.add(getLocalizedTagTitle(ancestorTag, locale));
                 }
 
-                if(isLast) { break; }
+                if (isLast) {
+                    break;
+                }
 
                 tagID = StringUtils.substringBeforeLast(tagID, PATH_DELIMITER);
                 count = StringUtils.countMatches(tagID, PATH_DELIMITER);
 
-                if(count <= 0) {
+                if (count <= 0) {
                     isLast = true;
                 }
             }
@@ -283,8 +304,9 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
 
     /**
      * Returns localized Tag Titles for all the ancestor tags to the tags supplied in "tagPaths"
-     *
+     * <p/>
      * Tags in
+     *
      * @param tags
      * @param locale
      * @param tagManager
@@ -294,13 +316,13 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
     private List<String> tagsToDownstreamLocalizedTagTitles(final Tag[] tags, final Locale locale, final TagManager tagManager, List<String> localizedTagTitles, int depth) {
         depth++;
 
-        for(final Tag tag : tags) {
-            if(tag.listChildren() != null && tag.listChildren().hasNext()) {
+        for (final Tag tag : tags) {
+            if (tag.listChildren() != null && tag.listChildren().hasNext()) {
                 final List<Tag> children = IteratorUtils.toList(tag.listChildren());
                 localizedTagTitles = tagsToDownstreamLocalizedTagTitles(children.toArray(new Tag[children.size()]), locale, tagManager, localizedTagTitles, depth);
             }
 
-            if(depth > 1) {
+            if (depth > 1) {
                 // Do not include the tags explicitly set on the resource
                 localizedTagTitles.add(getLocalizedTagTitle(tag, locale));
             }
@@ -310,7 +332,6 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
     }
 
     /**
-     *
      * @param tags
      * @param locale
      * @return
@@ -318,7 +339,7 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
     private List<String> tagsToLocalizedTagTitles(final Tag[] tags, final Locale locale) {
         List<String> localizedTagTitles = new ArrayList<String>();
 
-        for(final Tag tag : tags) {
+        for (final Tag tag : tags) {
             localizedTagTitles.add(getLocalizedTagTitle(tag, locale));
         }
 
@@ -338,19 +359,19 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
         String country = "";
         String language = "";
 
-        for(final String segment : segments) {
-            if(ArrayUtils.contains(Locale.getISOCountries(), segment)) {
+        for (final String segment : segments) {
+            if (ArrayUtils.contains(Locale.getISOCountries(), segment)) {
                 country = segment;
             } else if (ArrayUtils.contains(Locale.getISOLanguages(), segment)) {
                 language = segment;
             }
         }
 
-        if(StringUtils.isNotBlank(country) && StringUtils.isNotBlank(language)) {
+        if (StringUtils.isNotBlank(country) && StringUtils.isNotBlank(language)) {
             return LocaleUtils.toLocale(country + "-" + language);
-        } else if(StringUtils.isNotBlank(country)) {
+        } else if (StringUtils.isNotBlank(country)) {
             return LocaleUtils.toLocale(country);
-        } else if(StringUtils.isNotBlank(language)) {
+        } else if (StringUtils.isNotBlank(language)) {
             return LocaleUtils.toLocale(language);
         }
 
@@ -358,7 +379,6 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
     }
 
     /**
-     *
      * @param tag
      * @param locale
      * @return
@@ -367,9 +387,9 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
         final String title = tag.getTitle();
         final String localizeTitle = tag.getTitle(locale);
 
-        if(StringUtils.isNotBlank(localizeTitle)) {
+        if (StringUtils.isNotBlank(localizeTitle)) {
             return localizeTitle;
-        } else if(StringUtils.isNotBlank(title)) {
+        } else if (StringUtils.isNotBlank(title)) {
             return title;
         }
 
@@ -379,11 +399,11 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
     /**
      * Finds the proper "content" resource to read cq:tags from and write tag-titles to, based on
      * payload resource type.
-     *
+     * <p/>
      * cq:Page
      * cq:PageContent
      * nt:unstructured acting as cq:PageContent
-     *
+     * <p/>
      * dam:Asset
      * dam:Asset metadata
      *
@@ -392,44 +412,44 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
      */
     private Resource getContentResource(final Resource payloadResource) {
 
-        if(isPrimaryType(payloadResource, TYPE_CQ_PAGE)) {
+        if (isPrimaryType(payloadResource, TYPE_CQ_PAGE)) {
 
             /** cq:Page **/
 
             return payloadResource.getChild(JcrConstants.JCR_CONTENT);
-        } else if(StringUtils.equals(payloadResource.getName(), JcrConstants.JCR_CONTENT) &&
-            isPrimaryType(payloadResource, TYPE_CQ_PAGE_CONTENT)) {
+        } else if (StringUtils.equals(payloadResource.getName(), JcrConstants.JCR_CONTENT) &&
+                isPrimaryType(payloadResource, TYPE_CQ_PAGE_CONTENT)) {
 
             /** cq:PageContent **/
 
             return payloadResource;
-        } else if(isPrimaryType(payloadResource, JcrConstants.NT_UNSTRUCTURED)) {
+        } else if (isPrimaryType(payloadResource, JcrConstants.NT_UNSTRUCTURED)) {
 
             /** nt:unstructured **/
 
             final Resource parent = payloadResource.getParent();
 
-            if(parent != null &&
+            if (parent != null &&
                     isPrimaryType(parent, TYPE_CQ_PAGE) &&
                     StringUtils.equals(payloadResource.getName(), JcrConstants.JCR_CONTENT)) {
 
                 /** cq:Page / jcr:content(nt:unstructured) **/
 
                 return payloadResource;
-            } else if(StringUtils.equals(payloadResource.getName(), TYPE_DAM_ASSET_METADATA)) {
-                if(parent != null && StringUtils.equals(parent.getName(), JcrConstants.JCR_CONTENT)) {
+            } else if (StringUtils.equals(payloadResource.getName(), TYPE_DAM_ASSET_METADATA)) {
+                if (parent != null && StringUtils.equals(parent.getName(), JcrConstants.JCR_CONTENT)) {
                     Resource grandParent = null;
-                    if(parent != null) {
+                    if (parent != null) {
                         grandParent = parent.getParent();
                     }
 
-                    if(grandParent != null && isPrimaryType(grandParent, TYPE_DAM_ASSET)) {
+                    if (grandParent != null && isPrimaryType(grandParent, TYPE_DAM_ASSET)) {
                         /** dam:Asset / jcr:content / metadata **/
                         return payloadResource;
                     }
                 }
             }
-        } else if(isPrimaryType(payloadResource, TYPE_DAM_ASSET)) {
+        } else if (isPrimaryType(payloadResource, TYPE_DAM_ASSET)) {
 
             /** dam:Asset **/
 
@@ -443,7 +463,7 @@ public class LocalizedTagTitleExtractorProcessWorkflow implements WorkflowProces
 
     /**
      * Checks if the jcr:PrimaryType of a resource matches the type param
-     * 
+     *
      * @param resource
      * @param type
      * @return

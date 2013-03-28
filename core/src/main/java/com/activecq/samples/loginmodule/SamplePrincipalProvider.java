@@ -15,24 +15,24 @@
  */
 package com.activecq.samples.loginmodule;
 
-import java.security.Principal;
-import java.util.Properties;
-import javax.jcr.Credentials;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.principal.PrincipalIterator;
 import org.apache.jackrabbit.core.security.principal.PrincipalProvider;
 
+import javax.jcr.Credentials;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
+import java.security.Principal;
+import java.util.Properties;
+
 /**
- *
  * @author david
  */
 public class SamplePrincipalProvider implements PrincipalProvider {
 
     @Override
     public Principal getPrincipal(String string) {
-        if("davidg".contains(string)) {
+        if ("davidg".contains(string)) {
             return new SamplePrincipal("davidg");
         }
 
@@ -40,12 +40,11 @@ public class SamplePrincipalProvider implements PrincipalProvider {
     }
 
     /**
-     *
      * @param credentials
      * @return
      */
     private boolean canProvidePrincipal(Credentials credentials) {
-        if(!(credentials instanceof SimpleCredentials)) {
+        if (!(credentials instanceof SimpleCredentials)) {
             return false;
         }
 

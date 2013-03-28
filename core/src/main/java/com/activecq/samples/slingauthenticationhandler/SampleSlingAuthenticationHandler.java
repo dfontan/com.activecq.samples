@@ -15,11 +15,13 @@
  */
 package com.activecq.samples.slingauthenticationhandler;
 
-import java.util.Dictionary;
-import javax.jcr.SimpleCredentials;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -32,56 +34,65 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.SimpleCredentials;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Dictionary;
 
-@Component(label="ActiveCQ Samples - Sling Authentication Handler",
-        description="Sample Sling Authentication Handler",
-        metatype=true,
-        immediate=false)
 
-@Properties ({
+@Component(label = "Samples - Sling Authentication Handler",
+        description = "Sample Sling Authentication Handler",
+        metatype = true,
+        immediate = false
+)
+@Properties({
 
-    @Property(label="Authentication Paths",
-            description="JCR Paths which this Authentication Handler will authenticate",
-            name=AuthenticationHandler.PATH_PROPERTY,
-            value={"/content/sample-path"},
-            cardinality=Integer.MAX_VALUE),
+        @Property(label = "Authentication Paths",
+                description = "JCR Paths which this Authentication Handler will authenticate",
+                name = AuthenticationHandler.PATH_PROPERTY,
+                value = {"/content/sample-path"},
+                cardinality = Integer.MAX_VALUE),
 
-    @Property(label = "Service Ranking",
-            description="Service ranking. Higher gives more priority.",
-            name = "service.ranking",
-            intValue = 20,
-            propertyPrivate = false),
+        @Property(label = "Service Ranking",
+                description = "Service ranking. Higher gives more priority.",
+                name = "service.ranking",
+                intValue = 20,
+                propertyPrivate = false),
 
-    @Property(
-            name = AuthenticationHandler.TYPE_PROPERTY,
-            value = HttpServletRequest.FORM_AUTH,
-            propertyPrivate = true),
+        @Property(
+                name = AuthenticationHandler.TYPE_PROPERTY,
+                value = HttpServletRequest.FORM_AUTH,
+                propertyPrivate = true),
 
-    @Property(label = "Vendor",
-            name = "service.vendor",
-            value = "ActiveCQ",
-            propertyPrivate = true)
+        @Property(label = "Vendor",
+                name = "service.vendor",
+                value = "ActiveCQ",
+                propertyPrivate = true)
 })
 
 @Service
-public class SampleSlingAuthenticationHandler implements AuthenticationHandler, AuthenticationFeedbackHandler  {
+public class SampleSlingAuthenticationHandler implements AuthenticationHandler, AuthenticationFeedbackHandler {
 
     @SuppressWarnings("unused")
     private final Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     private static final String DEFAULT_TRUST_CREDENTIALS = "TrustedInfo";
     private String trustCredentials = DEFAULT_TRUST_CREDENTIALS;
-    @Property(label="Trust Credentials",
-        description="The Trust Credentials found in repository.xml or ldap.config",
-        value=DEFAULT_TRUST_CREDENTIALS)
+    @Property(label = "Trust Credentials",
+            description = "The Trust Credentials found in repository.xml or ldap.config",
+            value = DEFAULT_TRUST_CREDENTIALS)
     private static final String PROP_TRUST_CREDENTIALS = "prop.trust-credentials";
 
-    /** OSGi Service References **/
+    /**
+     * OSGi Service References *
+     */
 
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
-    /** Fields **/
+    /**
+     * Fields *
+     */
 
     private ResourceResolver adminResourceResolver;
 
@@ -95,7 +106,7 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
      */
     @Override
     public AuthenticationInfo extractCredentials(HttpServletRequest request,
-            HttpServletResponse response) {
+                                                 HttpServletResponse response) {
 
         // Extract UserId and Password from Request and store in SimpleCredentials object
         SimpleCredentials credentials =
@@ -106,7 +117,7 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
 
         boolean preauthenticated = false; // hased on pre-authentication success
 
-        if(preauthenticated) {
+        if (preauthenticated) {
             // If preauthenticated and the trustCredentials are applied, the
             // credentials.getUser() in the credentials object will be logged in
             // regardless of the credentials.getPassword() is valid
@@ -129,20 +140,22 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
 
     @Override
     public void dropCredentials(HttpServletRequest request,
-            HttpServletResponse response) {
+                                HttpServletResponse response) {
         // Remove credentials from the request/response
         // This generally removed removing/expiring auth Cookies
     }
 
     @Override
     public boolean requestCredentials(HttpServletRequest request,
-            HttpServletResponse response) {
+                                      HttpServletResponse response) {
         // Invoked when an anonymous request is made to a resource this
         // authetication handler handles (based on OSGi paths properties)
         return false;
     }
 
-    /** AuthenticationFeedbackHandler Methods **/
+    /**
+     * AuthenticationFeedbackHandler Methods *
+     */
 
     @Override
     public void authenticationFailed(HttpServletRequest request, HttpServletResponse response, AuthenticationInfo authInfo) {
@@ -165,7 +178,9 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
         return false;
     }
 
-    /** OSGi Component Methods **/
+    /**
+     * OSGi Component Methods *
+     */
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -176,12 +191,13 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
 
         try {
             adminResourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
-        } catch(LoginException ex) { }
+        } catch (LoginException ex) {
+        }
     }
 
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
-        if(adminResourceResolver != null) {
+        if (adminResourceResolver != null) {
             adminResourceResolver.close();
         }
     }

@@ -17,7 +17,11 @@ package com.activecq.samples.eventhandlers;
 
 import com.day.cq.jcrclustersupport.ClusterAware;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.event.EventUtil;
 import org.apache.sling.event.jobs.JobProcessor;
 import org.apache.sling.event.jobs.JobUtil;
@@ -38,32 +42,32 @@ import java.util.Dictionary;
  * movies (MIME type: video/x-msvideo) to /dropbox/movies/
  * otherwise to /dropbox/other/
  *
- * @scr.component  immediate="true"
+ * @scr.component immediate="true"
  * @scr.service interface="org.osgi.service.event.EventHandler"
  * @scr.property name="event.topics" valueRef="mypackage.DropBoxService.JOB_TOPIC"
  */
 
 
 @Component(
-    label="ActiveCQ Samples - Event Handler",
-    description="",
-    immediate=true,
-    metatype=false
+        label = "Samples - Sling Event Handler",
+        description = "",
+        immediate = true,
+        metatype = false
 )
 @Properties({
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Event Topics",
-        value={"com/activecq/events/poked", "com/activecq/samples/*"},
-        description="[Required] Event Topics this event handler will to respond to.",
-        name="event.topics",
-        propertyPrivate=true
-    )
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Event Topics",
+                value = {"samples/events/poked", "samples/events/*"},
+                description = "[Required] Event Topics this event handler will to respond to.",
+                name = "event.topics",
+                propertyPrivate = true
+        )
     /*
     @Property(
         label="Event Filter",
@@ -80,12 +84,12 @@ public class SampleEventHandler implements JobProcessor, EventHandler, ClusterAw
 
     // EventAdmin is used to manually trigger other events
     @Reference
-	private EventAdmin eventAdmin;
+    private EventAdmin eventAdmin;
     private boolean isMaster;
 
 
     @Override
-	public void handleEvent(Event event) {
+    public void handleEvent(Event event) {
         boolean handleLocally = false;
         boolean handleWithMaster = !handleLocally;
 
@@ -108,7 +112,7 @@ public class SampleEventHandler implements JobProcessor, EventHandler, ClusterAw
             // Jobs guarantee the event will be processed (though doesnt guarentee the job will be processed SUCCESSFULLY)
             JobUtil.processJob(event, this);
 
-        } else if(handleWithMaster && this.isMaster) {
+        } else if (handleWithMaster && this.isMaster) {
             // This is a distributed event (first 'if' condition failed)
 
             // If a event is distributed, you may only want to execute it the Master node in
@@ -118,20 +122,22 @@ public class SampleEventHandler implements JobProcessor, EventHandler, ClusterAw
         } else {
             // DO NOTHING!
         }
-	}
+    }
 
 
     @Override
-	public boolean process(Event event) {
+    public boolean process(Event event) {
         final String path = (String) event.getProperty("resourcePath");
 
         // Process event logic here
 
         // Only return false if job processing failed and the job should be rescheduled
         return true;
-	}
+    }
 
-    /** Cluster Aware Methods **/
+    /**
+     * Cluster Aware Methods *
+     */
 
     @Override
     public void bindRepository(String repositoryId, String clusterId, boolean isMaster) {
@@ -143,7 +149,9 @@ public class SampleEventHandler implements JobProcessor, EventHandler, ClusterAw
         this.isMaster = false;
     }
 
-    /** OSGi Component Methods **/
+    /**
+     * OSGi Component Methods *
+     */
 
     protected void activate(ComponentContext context) {
         Dictionary<String, Object> properties = context.getProperties();

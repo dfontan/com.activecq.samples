@@ -28,30 +28,34 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
 /**
- *
  * @author david
  */
 
 @SlingFilter(
-        label="ActiveCQ Samples - Sling Include Filter",
-        description="Sample implementation of a Sling Filter that remove decoration from includes.",
-        metatype=false,
-        generateComponent=true, // True if you want to leverage activate/deactivate
-        generateService=true,
-        order=0, // The smaller the number, the earlier in the Filter chain (can go negative); Defaults to Integer.MAX_VALUE which push it at the end of the chain
-        scope=SlingFilterScope.INCLUDE) // REQUEST, INCLUDE, FORWARD, ERROR, COMPONENT (REQUEST, INCLUDE, COMPONENT)
+        label = "Samples - Sling Include Filter",
+        description = "Sample implementation of a Sling Filter that remove decoration from includes.",
+        metatype = false,
+        generateComponent = true, // True if you want to leverage activate/deactivate
+        generateService = true,
+        order = 0, // The smaller the number, the earlier in the Filter chain (can go negative); Defaults to Integer.MAX_VALUE which push it at the end of the chain
+        scope = SlingFilterScope.INCLUDE) // REQUEST, INCLUDE, FORWARD, ERROR, COMPONENT (REQUEST, INCLUDE, COMPONENT)
 @Properties({
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    )
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        )
 })
 public class SampleSlingIncludeFilter implements Filter {
     private static final Logger log = LoggerFactory.getLogger(SampleSlingIncludeFilter.class.getName());
@@ -67,7 +71,7 @@ public class SampleSlingIncludeFilter implements Filter {
         final IncludeOptions includeOptions = IncludeOptions.getOptions(request, true);
 
         // Only execute in Publish mode
-        if(includeOptions != null &&
+        if (includeOptions != null &&
                 ((mode == null || WCMMode.DISABLED.equals(mode)))) {
             // Disable CQ Decoration on includes, only in Publish mode
             includeOptions.setDecorationTagName("");
@@ -82,7 +86,9 @@ public class SampleSlingIncludeFilter implements Filter {
         // Usually, do Nothing
     }
 
-    /** OSGi Component Methods **/
+    /**
+     * OSGi Component Methods *
+     */
 
     @Activate
     protected void activate(final ComponentContext componentContext) throws Exception {

@@ -18,7 +18,6 @@ package com.activecq.samples.slingadapterfactories;
 import org.apache.sling.api.adapter.SlingAdaptable;
 
 /**
- *
  * @author david
  */
 public class SampleAdaptable extends SlingAdaptable {

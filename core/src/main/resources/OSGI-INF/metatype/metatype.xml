@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0" localization="OSGI-INF/metatype/metatype">
-    <OCD id="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator" name="ActiveCQ - Sample Slideshow Resource Decorator" description="Sample">
-        <AD id="prop.resource-types" type="String" default="vendors/activecq/samples/components/fake/slideshow" name="Resource Types" description="Resource Types to decorate"/>
+    <OCD id="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator" name="Samples - Resource Decorator" description="Sample Sling Resource Decorator">
+        <AD id="prop.resource-types" type="String" default="samples/components/fake/slideshow" name="Resource Types" description="Resource Types to decorate"/>
     </OCD>
-    <OCD id="com.activecq.samples.slingauthenticationhandler.SampleSlingAuthenticationHandler" name="ActiveCQ Samples - Sling Authentication Handler" description="Sample Sling Authentication Handler">
+    <OCD id="com.activecq.samples.slingauthenticationhandler.SampleSlingAuthenticationHandler" name="Samples - Sling Authentication Handler" description="Sample Sling Authentication Handler">
         <AD id="path" type="String" default="/content/sample-path" name="Authentication Paths" description="JCR Paths which this Authentication Handler will authenticate" cardinality="2147483647"/>
         <AD id="service.ranking" type="Integer" default="20" name="Service Ranking" description="Service ranking. Higher gives more priority."/>
         <AD id="prop.trust-credentials" type="String" default="TrustedInfo" name="Trust Credentials" description="The Trust Credentials found in repository.xml or ldap.config"/>
     </OCD>
-    <OCD id="com.activecq.samples.slingfilters.SampleSlingFilter" name="ActiveCQ Samples - Sling Filter" description="Sample implementation of a Sling Filter"/>
-    <OCD id="com.activecq.samples.slingscheduler.SampleScheduledService" name="ActiveCQ Samples - Scheduled Service" description="%com.activecq.samples.slingscheduler.SampleScheduledService.description">
+    <OCD id="com.activecq.samples.slingfilters.SampleSlingFilter" name="Samples - Sling Filter" description="Sample implementation of a Sling Filter"/>
+    <OCD id="com.activecq.samples.slingscheduler.SampleScheduledService" name="Samples - Sling Scheduled Service" description="%com.activecq.samples.slingscheduler.SampleScheduledService.description">
         <AD id="service.enabled" type="Boolean" default="true" name="Enabled" description="Enable/Disable the Scheduled Service"/>
         <AD id="scheduler.expression" type="String" default="0 1 0 ? * *" name="Cron expression defining when this Scheduled Service will run" description="[every minute = 0 * * * * ?], [12:01am daily = 0 1 0 ? * *]"/>
         <AD id="scheduler.concurrent" type="Boolean" default="false" name="Allow concurrent executions" description="Allow concurrent executions of this Scheduled Service"/>
     </OCD>
-    <OCD id="com.activecq.samples.slingservice.impl.SampleClusterAwareServiceImpl" name="ActiveCQ Samples - Service" description="Sample implementation of a service.">
+    <OCD id="com.activecq.samples.slingservice.impl.SampleClusterAwareServiceImpl" name="Samples - Cluster-aware Service" description="Sample implementation of a service.">
         <AD id="prop.enabled" type="Boolean" default="false" name="Service Enable/Disable" description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service."/>
     </OCD>
-    <OCD id="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl" name="ActiveCQ Samples - Service" description="Sample implementation of a service.">
+    <OCD id="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl" name="Samples - Multi-reference Service" description="Sample implementation of a service.">
         <AD id="prop.enabled" type="Boolean" default="false" name="Service Enable/Disable" description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service."/>
     </OCD>
-    <OCD id="com.activecq.samples.slingservice.impl.SampleServiceImpl" name="ActiveCQ Samples - Service" description="Sample implementation of a service.">
+    <OCD id="com.activecq.samples.slingservice.impl.SampleServiceImpl" name="Samples - Basic Service" description="Sample implementation of a service.">
         <AD id="prop.enabled" type="Boolean" default="false" name="Service Enable/Disable" description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service."/>
     </OCD>
     <Designate pid="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator">

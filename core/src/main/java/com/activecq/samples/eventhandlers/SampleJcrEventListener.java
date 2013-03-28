@@ -15,7 +15,13 @@
  */
 package com.activecq.samples.eventhandlers;
 
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.api.observation.JackrabbitEvent;
 import org.apache.sling.event.EventUtil;
 import org.apache.sling.jcr.api.SlingRepository;
@@ -37,7 +43,7 @@ import java.util.logging.Logger;
 
 
 @Component(
-        label = "ActiveCQ Samples - JCR Event Listener",
+        label = "Samples - JCR Event Listener",
         description = "Sample implementation of a low-level JCR Event Listner.",
         metatype = false,
         immediate = true)
@@ -85,7 +91,7 @@ public class SampleJcrEventListener implements EventListener {
     private SlingRepository repository;
 
     @Reference
-	private EventAdmin eventAdmin;
+    private EventAdmin eventAdmin;
 
     @Override
     public void onEvent(EventIterator events) {
@@ -118,7 +124,7 @@ public class SampleJcrEventListener implements EventListener {
 
                 final String path = event.getPath();
 
-                if(Event.NODE_ADDED == event.getType()) {
+                if (Event.NODE_ADDED == event.getType()) {
                     // Node added!
                 } else if (Event.PROPERTY_ADDED == event.getType()) {
                     // Property added!
@@ -126,7 +132,7 @@ public class SampleJcrEventListener implements EventListener {
 
                 boolean handleInSlingEvent = true;
 
-                if(!handleInSlingEvent) {
+                if (!handleInSlingEvent) {
                     // Execute handler logic
                     Node node = adminSession.getNode(path);
                 } else {

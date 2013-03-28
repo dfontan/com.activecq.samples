@@ -86,7 +86,7 @@ public class QueryBuilderViewHandler extends ViewHandler {
 
     /**
      * Assume query should be treated as a QueryBuilder query, rather than a GQL query
-     *
+     * <p/>
      * This intelligently converts default Fulltext and Limit parameters to QueryBuilder equivalents
      *
      * @param request
@@ -117,8 +117,8 @@ public class QueryBuilderViewHandler extends ViewHandler {
 
         int userDefinedPropertyCount = 0;
 
-        for(final String key : request.getRequestParameterMap().keySet()) {
-            if(StringUtils.equals(key, ContentFinderConstants.CF_PATH)) {
+        for (final String key : request.getRequestParameterMap().keySet()) {
+            if (StringUtils.equals(key, ContentFinderConstants.CF_PATH)) {
                 log.debug("Converting path...");
                 map = GQLToQueryBuilderConverter.addPath(request, map);
             } else if (StringUtils.equals(key, ContentFinderConstants.CF_TYPE)) {

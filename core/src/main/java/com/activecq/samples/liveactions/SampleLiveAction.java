@@ -19,7 +19,12 @@ import com.day.cq.wcm.api.WCMException;
 import com.day.cq.wcm.api.msm.ActionConfig;
 import com.day.cq.wcm.api.msm.LiveAction;
 import com.day.cq.wcm.api.msm.LiveRelationship;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
@@ -30,49 +35,48 @@ import org.slf4j.LoggerFactory;
 import java.util.Dictionary;
 
 /**
- *
  * @author david
  */
 @Component(
-    label="ActiveCQ Samples - LiveAction",
-    description="",
-    immediate=true,
-    metatype=false
+        label = "Samples - MSM LiveAction",
+        description = "",
+        immediate = true,
+        metatype = false
 )
 @Properties({
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Name",
-        value="sampleLiveAction",
-        description="LiveAction Unique Name; Referenced in Rollout Configurations",
-        name="cq.wcm.msm.action.name",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Title",
-        value="ActiveCQ Samples - Live Action",
-        description="Sample AdobeCQ LiveAction implementation",
-        name="cq.wcm.msm.action.title",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Rank",
-        intValue=10,
-        name="cq.wcm.msm.action.rank",
-        description="LiveAction Rank"
-    ),
-    @Property(
-        label="Properties",
-        value={"enabled"},
-        cardinality=Integer.MAX_VALUE,
-        name="cq.wcm.msm.action.properties",
-        description="LiveAction Properties"
-    )
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Name",
+                value = "sampleLiveAction",
+                description = "LiveAction Unique Name; Referenced in Rollout Configurations",
+                name = "cq.wcm.msm.action.name",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Title",
+                value = "Samples - Live Action",
+                description = "Sample AdobeCQ LiveAction implementation",
+                name = "cq.wcm.msm.action.title",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Rank",
+                intValue = 10,
+                name = "cq.wcm.msm.action.rank",
+                description = "LiveAction Rank"
+        ),
+        @Property(
+                label = "Properties",
+                value = {"enabled"},
+                cardinality = Integer.MAX_VALUE,
+                name = "cq.wcm.msm.action.properties",
+                description = "LiveAction Properties"
+        )
 })
 @Service
 public class SampleLiveAction implements LiveAction {
@@ -116,7 +120,9 @@ public class SampleLiveAction implements LiveAction {
         return this.rank;
     }
 
-    /** OSGi Component Methods **/
+    /**
+     * OSGi Component Methods *
+     */
 
     @Activate
     protected void activate(ComponentContext context) {

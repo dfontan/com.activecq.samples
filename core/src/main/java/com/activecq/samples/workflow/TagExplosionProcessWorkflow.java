@@ -25,10 +25,17 @@ import com.day.cq.workflow.exec.WorkflowProcess;
 import com.day.cq.workflow.metadata.MetaDataMap;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.*;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
@@ -38,37 +45,40 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
- *
  * @author david
  */
 
 @Component(
-    label="ActiveCQ Samples - Tag Explosion Workflow",
-    description="Sample Workflow Process implementation",
-    metatype=false,
-    immediate=true
+        label = "Samples - Tag Explosion Workflow",
+        description = "Sample Workflow Process implementation",
+        metatype = false,
+        immediate = true
 )
 @Properties({
-    @Property(
-        name=Constants.SERVICE_DESCRIPTION,
-        value="Explodes tags.",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    ),
-    @Property(
-        label="Workflow Label",
-        name="process.label",
-        value="Tag Explosion",
-        description="Explodes tags down the tree."
-    )
+        @Property(
+                name = Constants.SERVICE_DESCRIPTION,
+                value = "Explodes tags.",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Workflow Label",
+                name = "process.label",
+                value = "Tag Explosion",
+                description = "Explodes tags down the tree."
+        )
 })
 @Service
 public class TagExplosionProcessWorkflow implements WorkflowProcess {
@@ -82,16 +92,22 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
     public static final String TYPE_DAM_ASSET_METADATA = "metatdata";
     public static final String REL_PATH_DAM_ASSET_METADATA = "jcr:content/metatdata";
 
-    /** OSGi Service References **/
+    /**
+     * OSGi Service References *
+     */
 
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
-    /** Fields **/
+    /**
+     * Fields *
+     */
 
     private static final Logger log = LoggerFactory.getLogger(TagExplosionProcessWorkflow.class);
 
-    /** Work flow execute method **/
+    /**
+     * Work flow execute method *
+     */
 
     @Override
     public void execute(WorkItem workItem, WorkflowSession workflowSession, MetaDataMap args) throws WorkflowException {
@@ -100,7 +116,9 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
         final String type = workflowData.getPayloadType();
 
         // Check if the payload is a path in the JCR
-        if(!StringUtils.equals(type, "JCR_PATH")) { return; }
+        if (!StringUtils.equals(type, "JCR_PATH")) {
+            return;
+        }
 
         Session session = workflowSession.getSession();
         // Get the path to the JCR resource from the payload
@@ -128,7 +146,7 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
             // custom property "tag-titles" to
             final Resource contentResource = getContentResource(resource);
 
-            if(contentResource == null) {
+            if (contentResource == null) {
                 log.error("Could not find a valid content resource node for payload: {}", resource.getPath());
                 return;
             }
@@ -144,7 +162,7 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
             // This is used to determine if changes if any updates are needed to this node.
             final String[] previousExplodedTags = properties.get(TO_PROPERTY, new String[]{});
 
-            if(!tags.isEmpty()) {
+            if (!tags.isEmpty()) {
                 newExplodedTags.addAll(getExplodedTags(tags, newExplodedTags));
             }
 
@@ -154,7 +172,7 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
                 final Node node = session.getNode(contentResource.getPath());
 
                 // If the currently applied Tag Titles are the same as the derived Tag titles then skip!
-                if(!isSame(newExplodedTags.toArray(new String[]{}), previousExplodedTags)) {
+                if (!isSame(newExplodedTags.toArray(new String[]{}), previousExplodedTags)) {
                     // If changes have been made to the Tag Names, then apply to the tag-titles property
                     // on the content resource.
                     node.setProperty(TO_PROPERTY, newExplodedTags.toArray(new String[]{}));
@@ -167,11 +185,11 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
             } catch (RepositoryException ex) {
                 log.error(ex.getMessage());
             }
-        } catch(LoginException ex) {
+        } catch (LoginException ex) {
             log.error(ex.getMessage());
         } finally {
             // Clean up after yourself please!!!
-            if(resolver != null) {
+            if (resolver != null) {
                 resolver.close();
                 resolver = null;
             }
@@ -189,12 +207,12 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
      * @return
      */
     private boolean isSame(String[] a, String[] b) {
-        if(a.length != b.length) {
+        if (a.length != b.length) {
             return false;
         }
 
-        for(int i = 0; i < a.length; i++) {
-            if(!StringUtils.equals(a[i], b[i])) {
+        for (int i = 0; i < a.length; i++) {
+            if (!StringUtils.equals(a[i], b[i])) {
                 return false;
             }
         }
@@ -204,21 +222,22 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
 
     /**
      * Returns localized Tag Titles for all the ancestor tags to the tags supplied in "tagPaths"
-     *
+     * <p/>
      * Tags in
+     *
      * @param tags
      * @param explodedTags
      * @return
      */
     private HashSet<String> getExplodedTags(final List<Tag> tags, HashSet<String> explodedTags) {
-        for(final Tag tag : tags) {
+        for (final Tag tag : tags) {
             explodedTags.add(tag.getTagID());
 
-            if(tag.listChildren() != null && tag.listChildren().hasNext()) {
+            if (tag.listChildren() != null && tag.listChildren().hasNext()) {
                 final List<Tag> children = IteratorUtils.toList(tag.listChildren());
                 explodedTags.addAll(this.getExplodedTags(children, explodedTags));
             } else {
-                log.debug("Add tag: {}", tag.getTagID() );
+                log.debug("Add tag: {}", tag.getTagID());
                 explodedTags.add(tag.getTagID());
             }
         }
@@ -231,10 +250,10 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
         final String[] tagIds = properties.get(property, new String[]{});
         final List<Tag> tags = new ArrayList<Tag>();
 
-        for(final String tagId : tagIds) {
+        for (final String tagId : tagIds) {
             final Tag tmp = tagManager.resolve(tagId);
 
-            if(tmp != null) {
+            if (tmp != null) {
                 tags.add(tmp);
             }
         }
@@ -245,11 +264,11 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
     /**
      * Finds the proper "content" resource to read cq:tags from and write tag-titles to, based on
      * payload resource type.
-     *
+     * <p/>
      * cq:Page
      * cq:PageContent
      * nt:unstructured acting as cq:PageContent
-     *
+     * <p/>
      * dam:Asset
      * dam:Asset metadata
      *
@@ -258,44 +277,44 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
      */
     private Resource getContentResource(final Resource payloadResource) {
 
-        if(isPrimaryType(payloadResource, TYPE_CQ_PAGE)) {
+        if (isPrimaryType(payloadResource, TYPE_CQ_PAGE)) {
 
             /** cq:Page **/
 
             return payloadResource.getChild(JcrConstants.JCR_CONTENT);
-        } else if(StringUtils.equals(payloadResource.getName(), JcrConstants.JCR_CONTENT) &&
-            isPrimaryType(payloadResource, TYPE_CQ_PAGE_CONTENT)) {
+        } else if (StringUtils.equals(payloadResource.getName(), JcrConstants.JCR_CONTENT) &&
+                isPrimaryType(payloadResource, TYPE_CQ_PAGE_CONTENT)) {
 
             /** cq:PageContent **/
 
             return payloadResource;
-        } else if(isPrimaryType(payloadResource, JcrConstants.NT_UNSTRUCTURED)) {
+        } else if (isPrimaryType(payloadResource, JcrConstants.NT_UNSTRUCTURED)) {
 
             /** nt:unstructured **/
 
             final Resource parent = payloadResource.getParent();
 
-            if(parent != null &&
+            if (parent != null &&
                     isPrimaryType(parent, TYPE_CQ_PAGE) &&
                     StringUtils.equals(payloadResource.getName(), JcrConstants.JCR_CONTENT)) {
 
                 /** cq:Page / jcr:content(nt:unstructured) **/
 
                 return payloadResource;
-            } else if(StringUtils.equals(payloadResource.getName(), TYPE_DAM_ASSET_METADATA)) {
-                if(parent != null && StringUtils.equals(parent.getName(), JcrConstants.JCR_CONTENT)) {
+            } else if (StringUtils.equals(payloadResource.getName(), TYPE_DAM_ASSET_METADATA)) {
+                if (parent != null && StringUtils.equals(parent.getName(), JcrConstants.JCR_CONTENT)) {
                     Resource grandParent = null;
-                    if(parent != null) {
+                    if (parent != null) {
                         grandParent = parent.getParent();
                     }
 
-                    if(grandParent != null && isPrimaryType(grandParent, TYPE_DAM_ASSET)) {
+                    if (grandParent != null && isPrimaryType(grandParent, TYPE_DAM_ASSET)) {
                         /** dam:Asset / jcr:content / metadata **/
                         return payloadResource;
                     }
                 }
             }
-        } else if(isPrimaryType(payloadResource, TYPE_DAM_ASSET)) {
+        } else if (isPrimaryType(payloadResource, TYPE_DAM_ASSET)) {
 
             /** dam:Asset **/
 
@@ -309,7 +328,7 @@ public class TagExplosionProcessWorkflow implements WorkflowProcess {
 
     /**
      * Checks if the jcr:PrimaryType of a resource matches the type param
-     * 
+     *
      * @param resource
      * @param type
      * @return

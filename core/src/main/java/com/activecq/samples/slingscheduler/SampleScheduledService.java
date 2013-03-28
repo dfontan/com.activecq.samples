@@ -16,8 +16,6 @@
 package com.activecq.samples.slingscheduler;
 
 import com.day.cq.jcrclustersupport.ClusterAware;
-import java.util.Map;
-import java.util.logging.Level;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -33,65 +31,74 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.logging.Level;
+
 /**
- *
  * @author david
  */
 @Component(
-    label="ActiveCQ Samples - Scheduled Service",
-    description="",
-    immediate=true,
-    metatype=true
+        label = "Samples - Sling Scheduled Service",
+        description = "",
+        immediate = true,
+        metatype = true
 )
 
 @Properties({
-    @Property(
-        label="Enabled",
-        description="Enable/Disable the Scheduled Service",
-        name="service.enabled",
-        boolValue=true
-    ),
-    @Property(
-        label="Cron expression defining when this Scheduled Service will run",
-        description="[every minute = 0 * * * * ?], [12:01am daily = 0 1 0 ? * *]",
-        name="scheduler.expression",
-        value="0 1 0 ? * *"
-    ),
-    @Property(
-        label="Allow concurrent executions",
-        description="Allow concurrent executions of this Scheduled Service",
-        name="scheduler.concurrent",
-        boolValue=false
-    ),
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    )
+        @Property(
+                label = "Enabled",
+                description = "Enable/Disable the Scheduled Service",
+                name = "service.enabled",
+                boolValue = true
+        ),
+        @Property(
+                label = "Cron expression defining when this Scheduled Service will run",
+                description = "[every minute = 0 * * * * ?], [12:01am daily = 0 1 0 ? * *]",
+                name = "scheduler.expression",
+                value = "0 1 0 ? * *"
+        ),
+        @Property(
+                label = "Allow concurrent executions",
+                description = "Allow concurrent executions of this Scheduled Service",
+                name = "scheduler.concurrent",
+                boolValue = false
+        ),
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        )
 })
 
 @Service
 public class SampleScheduledService implements Runnable, ClusterAware {
 
-    /** OSGi Service References **/
+    /**
+     * OSGi Service References *
+     */
 
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
-    /** Fields **/
+    /**
+     * Fields *
+     */
 
-    private ResourceResolver adminResourceResolver;
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private boolean isMaster = false;
 
-    /** Scheduled Service Methods **/
+    /**
+     * Scheduled Service Methods *
+     */
 
     @Override
     public void run() {
         // Scheduled services that do not have to be cluster aware do not need
         // to implement this check OR extend ClusterAware
-        if(!isMaster) { return; }
+        if (!isMaster) {
+            return;
+        }
 
         // Scheduled service logic, only run on the Master
 
@@ -105,13 +112,15 @@ public class SampleScheduledService implements Runnable, ClusterAware {
             java.util.logging.Logger.getLogger(SampleScheduledService.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             // ALWAYS close resolvers you open
-            if(adminResourceResolver != null) {
+            if (adminResourceResolver != null) {
                 adminResourceResolver.close();
             }
         }
     }
 
-    /** ClusterAware Methods **/
+    /**
+     * ClusterAware Methods *
+     */
 
     @Override
     public void unbindRepository() {
@@ -123,7 +132,9 @@ public class SampleScheduledService implements Runnable, ClusterAware {
         this.isMaster = isMaster;
     }
 
-    /** OSGi Component Methods **/
+    /**
+     * OSGi Component Methods *
+     */
 
     @Activate
     protected void activate(final ComponentContext componentContext) throws Exception {

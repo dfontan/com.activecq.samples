@@ -18,7 +18,6 @@ package com.activecq.samples.loginmodule;
 import java.security.Principal;
 
 /**
- *
  * @author david
  */
 public class SamplePrincipal implements Principal {

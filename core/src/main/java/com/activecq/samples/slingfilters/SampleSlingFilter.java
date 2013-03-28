@@ -29,30 +29,34 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
 /**
- *
  * @author david
  */
 
 @SlingFilter(
-        label="ActiveCQ Samples - Sling Filter",
-        description="Sample implementation of a Sling Filter",
-        metatype=true,
-        generateComponent=true, // True if you want to leverage activate/deactivate
-        generateService=true,
-        order=0, // The smaller the number, the earlier in the Filter chain (can go negative); Defaults to Integer.MAX_VALUE which push it at the end of the chain
-        scope=SlingFilterScope.REQUEST) // REQUEST, INCLUDE, FORWARD, ERROR, COMPONENT (REQUEST, INCLUDE, COMPONENT)
+        label = "Samples - Sling Filter",
+        description = "Sample implementation of a Sling Filter",
+        metatype = true,
+        generateComponent = true, // True if you want to leverage activate/deactivate
+        generateService = true,
+        order = 0, // The smaller the number, the earlier in the Filter chain (can go negative); Defaults to Integer.MAX_VALUE which push it at the end of the chain
+        scope = SlingFilterScope.REQUEST) // REQUEST, INCLUDE, FORWARD, ERROR, COMPONENT (REQUEST, INCLUDE, COMPONENT)
 @Properties({
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    )
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        )
 })
 public class SampleSlingFilter implements Filter {
     private static final Logger log = LoggerFactory.getLogger(SampleSlingFilter.class.getName());
@@ -75,7 +79,7 @@ public class SampleSlingFilter implements Filter {
         final SlingHttpServletRequest slingRequest = (SlingHttpServletRequest) request;
         final Resource resource = slingRequest.getResource();
 
-        if(false == true) {
+        if (false == true) {
             // Is the SlingFilterScope is REQUEST, redirects can be issued.
             slingResponse.sendRedirect("/some/redirect.html");
             return;
@@ -90,7 +94,9 @@ public class SampleSlingFilter implements Filter {
         // Usually, do Nothing
     }
 
-    /** OSGi Component Methods **/
+    /**
+     * OSGi Component Methods *
+     */
 
     @Activate
     protected void activate(final ComponentContext componentContext) throws Exception {

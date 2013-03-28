@@ -17,7 +17,13 @@ package com.activecq.samples.slingservice.impl;
 
 import com.activecq.samples.slingservice.SampleClusterAwareService;
 import com.day.cq.jcrclustersupport.ClusterAware;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
@@ -26,29 +32,31 @@ import org.osgi.service.component.ComponentContext;
 import java.util.Map;
 
 @Component(
-    label="ActiveCQ Samples - Sample Cluster-aware Service",
-    description="Sample implementation of a service.",
-    metatype=true,
-    immediate=false
+        label = "Samples - Cluster-aware Service",
+        description = "Sample implementation of a service.",
+        metatype = true,
+        immediate = false
 )
-@Properties ({
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    )
+@Properties({
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        )
 })
 @Service
 public class SampleClusterAwareServiceImpl implements SampleClusterAwareService, ClusterAware {
 
-    /** OSGi Properties **/
+    /**
+     * OSGi Properties *
+     */
 
     private static final boolean DEFAULT_ENABLED = false;
     private boolean enabled = DEFAULT_ENABLED;
-    @Property(label="Service Enable/Disable",
-        description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service.",
-        boolValue=DEFAULT_ENABLED)
+    @Property(label = "Service Enable/Disable",
+            description = "Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service.",
+            boolValue = DEFAULT_ENABLED)
     private static final String PROP_ENABLED = "prop.enabled";
 
     /* OSGi Service References */
@@ -56,20 +64,28 @@ public class SampleClusterAwareServiceImpl implements SampleClusterAwareService,
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
-    /** Fields **/
+    /**
+     * Fields *
+     */
 
     private String postfix = "";
 
-    /** Service Methods **/
+    /**
+     * Service Methods *
+     */
 
     @Override
     public String helloWorld() {
-        if(!this.enabled) { return null; }
+        if (!this.enabled) {
+            return null;
+        }
 
         return "Hello World" + postfix;
     }
 
-    /** ClusterAware Methods **/
+    /**
+     * ClusterAware Methods *
+     */
     @Override
     public void unbindRepository() {
         postfix = "";
@@ -77,12 +93,14 @@ public class SampleClusterAwareServiceImpl implements SampleClusterAwareService,
 
     @Override
     public void bindRepository(String repositoryId, String clusterId, boolean isMaster) {
-        if(isMaster) {
+        if (isMaster) {
             postfix = " from Master!";
         }
     }
 
-    /** OSGi Component Methods **/
+    /**
+     * OSGi Component Methods *
+     */
 
     @Activate
     protected void activate(final ComponentContext componentContext) throws Exception {

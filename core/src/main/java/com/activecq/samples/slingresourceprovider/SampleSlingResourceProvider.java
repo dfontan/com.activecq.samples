@@ -16,13 +16,6 @@
 package com.activecq.samples.slingresourceprovider;
 
 import com.day.cq.commons.jcr.JcrConstants;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -30,41 +23,45 @@ import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceMetadata;
 import org.apache.sling.api.resource.ResourceProvider;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.SyntheticResource;
 import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author david
  */
 @Component(
-    label = "ActiveCQ Samples - Sling Resource Provider",
-    description = "Sample Sling Resource Provider",
-    metatype=false,
-    immediate=false
+        label = "Samples - Sling Resource Provider",
+        description = "Sample Sling Resource Provider",
+        metatype = false,
+        immediate = false
 )
 @Properties({
-    @Property(
-        label = "Vendor",
-        name = Constants.SERVICE_VENDOR,
-        value = "ActiveCQ",
-        propertyPrivate = true
-    ),
-    @Property(
-        label="Root paths",
-        description="Root paths this Sling Resource Provider will respond to",
-        name=ResourceProvider.ROOTS,
-        value={"/content/mount/thirdparty"})
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Root paths",
+                description = "Root paths this Sling Resource Provider will respond to",
+                name = ResourceProvider.ROOTS,
+                value = {"/content/mount/thirdparty"})
 })
-@Service                                                                                                                   // (2)
+@Service
 public class SampleSlingResourceProvider implements ResourceProvider {
 
     private List<String> roots;
@@ -86,14 +83,20 @@ public class SampleSlingResourceProvider implements ResourceProvider {
         // Return null early if getResource() cannot/should not process the resource request
 
         // Check the user/group issuing the resource resolution request
-        if(!accepts(resourceResolver)) { return null; }
+        if (!accepts(resourceResolver)) {
+            return null;
+        }
 
         // Reject any paths that do not match the roots
-        if(!accepts(path)) { return null; }
+        if (!accepts(path)) {
+            return null;
+        }
 
         // If path is a root, return a Sythentic Folder
         // This could be any "type" of SyntheticResource
-        if(isRoot(path)) { return new SyntheticResource(resourceResolver, path, JcrConstants.NT_FOLDER); }
+        if (isRoot(path)) {
+            return new SyntheticResource(resourceResolver, path, JcrConstants.NT_FOLDER);
+        }
 
         // Do other checks on the path to make sure it meets your specific requirements
 
@@ -126,32 +129,38 @@ public class SampleSlingResourceProvider implements ResourceProvider {
         final String path = parent.getPath();
 
         // Check the user/group issuing the resource resolution request
-        if(!accepts(parent.getResourceResolver())) { return null; }
+        if (!accepts(parent.getResourceResolver())) {
+            return null;
+        }
 
         // Reject any paths that do not match the roots
-        if(!accepts(path)) { return null; }
+        if (!accepts(path)) {
+            return null;
+        }
 
         // If path is not the root, return null
         // This only allows listChildren to be called on a "Root" path
         // This restriction is implementation specific
-        if(!isRoot(path)) { return null; }
+        if (!isRoot(path)) {
+            return null;
+        }
 
         List<Resource> resources = new ArrayList<Resource>();
 
         // Call third party, get and create a list of resources in a similar fashion as in getResource
-        for(int i = 0; i < 10; i++) {
-             ResourceMetadata resourceMetaData = new ResourceMetadata();
+        for (int i = 0; i < 10; i++) {
+            ResourceMetadata resourceMetaData = new ResourceMetadata();
 
-             // Create the "path" for this resource; this pathing scheme should
-             // be compatible with getResource(..)
-             resourceMetaData.setResolutionPath(path + "_" + i);
-             resourceMetaData.put("index", String.valueOf(i));
-             final String resourceType = "vendors/activecq/samples/components/content/title";
+            // Create the "path" for this resource; this pathing scheme should
+            // be compatible with getResource(..)
+            resourceMetaData.setResolutionPath(path + "_" + i);
+            resourceMetaData.put("index", String.valueOf(i));
+            final String resourceType = "vendors/activecq/samples/components/content/title";
 
-             Resource resource = new SyntheticResource(parent.getResourceResolver(),
-                     resourceMetaData, resourceType);
+            Resource resource = new SyntheticResource(parent.getResourceResolver(),
+                    resourceMetaData, resourceType);
 
-             resources.add(resource);
+            resources.add(resource);
         }
 
         return resources.iterator();
@@ -164,8 +173,8 @@ public class SampleSlingResourceProvider implements ResourceProvider {
      * @return
      */
     protected boolean isRoot(String path) {
-        for(String root : this.roots) {
-            if(StringUtils.equals(path, root)) {
+        for (String root : this.roots) {
+            if (StringUtils.equals(path, root)) {
                 return true;
             }
         }
@@ -180,14 +189,14 @@ public class SampleSlingResourceProvider implements ResourceProvider {
      * @return
      */
     protected boolean accepts(String path) {
-        for(String root : this.roots) {
-            if(StringUtils.startsWith(path, root.concat("/"))) {
+        for (String root : this.roots) {
+            if (StringUtils.startsWith(path, root.concat("/"))) {
                 return true;
             }
         }
 
         return false;
-     }
+    }
 
     /**
      * Checks if this Resource Provider is willing to handle the resolution request
@@ -196,14 +205,16 @@ public class SampleSlingResourceProvider implements ResourceProvider {
      * @return
      */
     protected boolean accepts(ResourceResolver resourceResolver) {
-        if(resourceResolver == null) { return false; }
-        if(StringUtils.equals("anonymous", resourceResolver.getUserID())) {
+        if (resourceResolver == null) {
+            return false;
+        }
+        if (StringUtils.equals("anonymous", resourceResolver.getUserID())) {
             // Terrible "anonymous" check, this is just for an example
             return false;
         }
 
         return true;
-     }
+    }
 
     /**
      * OSGi Component Methods *
@@ -223,10 +234,10 @@ public class SampleSlingResourceProvider implements ResourceProvider {
         // Get Roots from Service properties
         this.roots = new ArrayList<String>();
 
-        String[] rootsArray = PropertiesUtil.toStringArray(properties.get(ResourceProvider.ROOTS), new String[] {});
-        for(String root : rootsArray) {
+        String[] rootsArray = PropertiesUtil.toStringArray(properties.get(ResourceProvider.ROOTS), new String[]{});
+        for (String root : rootsArray) {
             root = StringUtils.strip(root);
-            if(StringUtils.isBlank(root)) {
+            if (StringUtils.isBlank(root)) {
                 continue;
             } else if (StringUtils.equals(root, "/")) {
                 // Cowardly refusing to mount the root

@@ -28,29 +28,30 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**
- *
  * @author david
  */
 @SlingServlet(
-        label="ActiveCQ Sample - Sling All Methods Servlet",
-        description="Sample implementation of a Sling All Methods Servlet.",
-        paths={"/services/all-sample"},
-        methods={"GET", "POST"}, // Ignored if paths is set - Defaults to GET if not specified
-        resourceTypes={}, // Ignored if paths is set
-        selectors={"print.a4"}, // Ignored if paths is set
-        extensions={"html", "htm"}  // Ignored if paths is set
+        label = "Samples - Sling All Methods Servlet",
+        description = "Sample implementation of a Sling All Methods Servlet.",
+        paths = {"/services/all-sample"},
+        methods = {"GET", "POST"}, // Ignored if paths is set - Defaults to GET if not specified
+        resourceTypes = {}, // Ignored if paths is set
+        selectors = {"print.a4"}, // Ignored if paths is set
+        extensions = {"html", "htm"}  // Ignored if paths is set
 )
 @Properties({
-    @Property(
-        label="Vendor",
-        name=Constants.SERVICE_VENDOR,
-        value="ActiveCQ",
-        propertyPrivate=true
-    )
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true
+        )
 })
 public class SampleAllMethodsServlet extends SlingAllMethodsServlet implements OptingServlet {
 
-    /** Add overrides for other SlingAllMethodsServlet here (doHead, doTrace, doPut, doDelete, etc.) **/
+    /**
+     * Add overrides for other SlingAllMethodsServlet here (doHead, doTrace, doPut, doDelete, etc.) *
+     */
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
@@ -62,7 +63,9 @@ public class SampleAllMethodsServlet extends SlingAllMethodsServlet implements O
         // Implement custom handling of POST requests
     }
 
-    /** OptingServlet Acceptance Method **/
+    /**
+     * OptingServlet Acceptance Method *
+     */
 
     @Override
     public boolean accepts(SlingHttpServletRequest request) {

@@ -16,36 +16,48 @@
 package com.activecq.samples.slingservice.impl;
 
 import com.activecq.samples.slingservice.SampleService;
-import org.apache.felix.scr.annotations.*;
+import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.ReferenceCardinality;
+import org.apache.felix.scr.annotations.ReferencePolicy;
+import org.apache.felix.scr.annotations.References;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 @Component(
-    label = "ActiveCQ Samples - Sample Multi-reference Service",
-description = "Sample implementation of a service.",
-metatype = true,
-immediate = false)
+        label = "Samples - Multi-reference Service",
+        description = "Sample implementation of a service.",
+        metatype = true,
+        immediate = false)
 @Properties({
-    @Property(
-        label = "Vendor",
-    name = Constants.SERVICE_VENDOR,
-    value = "ActiveCQ",
-    propertyPrivate = true)
+        @Property(
+                label = "Vendor",
+                name = Constants.SERVICE_VENDOR,
+                value = "ActiveCQ",
+                propertyPrivate = true)
 })
 @References({
-    @Reference(
-    name = SampleMultiReferenceServiceImpl.SAMPLE_SERVICE_NAME,
-    referenceInterface = SampleService.class,
-    cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE,
-    policy = ReferencePolicy.DYNAMIC,
-    bind = "bindReferenceServices",
-    unbind = "unbindReferenceServices")
+        @Reference(
+                name = SampleMultiReferenceServiceImpl.SAMPLE_SERVICE_NAME,
+                referenceInterface = SampleService.class,
+                cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE,
+                policy = ReferencePolicy.DYNAMIC,
+                bind = "bindReferenceServices",
+                unbind = "unbindReferenceServices")
 })
 @Service
 public class SampleMultiReferenceServiceImpl implements SampleService {
@@ -97,8 +109,6 @@ public class SampleMultiReferenceServiceImpl implements SampleService {
     }
 
     /**
-     *
-     *
      * @param ref
      */
     protected void unbindReferenceServices(ServiceReference ref) {
@@ -112,7 +122,7 @@ public class SampleMultiReferenceServiceImpl implements SampleService {
 
     protected <T> List<T> registerReferenceServices
             (List<ServiceReference> serviceReferences,
-            ComponentContext componentContext, String name, Class<T> klass) {
+             ComponentContext componentContext, String name, Class<T> klass) {
         List<T> serviceObjects = new ArrayList<T>();
 
         try {
