@@ -15,7 +15,7 @@
  */
 
 /*
-.cq-sidekick-activecq-custom {
+.cq-sidekick-sample-custom {
     // 16 x 16 PNG Icon with Transparent BG
     background-image: url('/path/to/default/widgets/wcm/Sidekick/preview.png');
 }
@@ -42,10 +42,10 @@
 
                 new CQ.Ext.Button({
                     // This is the CSS class that defines the 16 x 16 icon image (See above)
-                    "iconCls": "cq-sidekick-activecq-custom",
+                    "iconCls": "cq-sidekick-sample-custom",
 
                     "tooltip": {
-                        "title": "ActiveCQ Bottom Toolbar Button",
+                        "title": "Sample Bottom Toolbar Button",
                         "text": CQ.I18n.getMessage("Click this button"),
                         "autoHide": true
                     },

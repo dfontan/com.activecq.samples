@@ -32,9 +32,9 @@
             /** Begin: Code to add the button to the Sidekick **/
 
             CQ_Sidekick.addAction({
-                text: "ActiveCQ Sample Action",
+                text: "Sample Action",
                 handler: function () {
-                    alert('ActiveCQ Sample Click Handler;');
+                    alert('Sample Click Handler;');
                 },
                 context: [ CQ.wcm.Sidekick.PAGE ]
                 /*
