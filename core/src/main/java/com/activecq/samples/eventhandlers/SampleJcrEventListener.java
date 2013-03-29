@@ -29,7 +29,6 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.event.EventAdmin;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.observation.Event;
@@ -83,10 +82,6 @@ public class SampleJcrEventListener implements EventListener {
     private final String[] nodeTypes = new String[]{"nt:unstructured", "nt:folder"};
 
 
-    // Is this OK? JCR Sessions are not threadsafe?
-    private Session adminSession;
-    private ObservationManager observationManager;
-
     @Reference
     private SlingRepository repository;
 
@@ -134,7 +129,10 @@ public class SampleJcrEventListener implements EventListener {
 
                 if (!handleInSlingEvent) {
                     // Execute handler logic
-                    Node node = adminSession.getNode(path);
+
+                    // Get a resourceResolver or JCR Session using the usual ways
+                    // Always make sure to close them if you open them though!
+
                 } else {
                     // Or fire off a specific Sling Event
                     final Dictionary<String, Object> eventProperties = new Hashtable<String, Object>();
@@ -150,22 +148,42 @@ public class SampleJcrEventListener implements EventListener {
 
     @Activate
     public void activate(ComponentContext context) throws RepositoryException {
-        this.adminSession = repository.loginAdministrative(null);
-        // Get JCR ObservationManager from Workspace
-        this.observationManager =
-                this.adminSession.getWorkspace().getObservationManager();
+        Session adminSession = null;
+        ObservationManager observationManager = null;
 
-        // Register the JCR Listener
-        this.observationManager.addEventListener(this, events, absPath, isDeep,
-                uuids, nodeTypes, noLocal);
+        try {
+            adminSession = repository.loginAdministrative(null);
+
+            // Get JCR ObservationManager from Workspace
+            observationManager = adminSession.getWorkspace().getObservationManager();
+
+            // Register the JCR Listener
+
+            /** This is the KEY element where this listener is registered **/
+            observationManager.addEventListener(this, events, absPath, isDeep,
+                    uuids, nodeTypes, noLocal);
+        } finally {
+            if (adminSession != null) {
+                adminSession.logout();
+            }
+        }
 
     }
 
     @Deactivate
     public void deactivate() throws RepositoryException {
+        Session adminSession = null;
+        ObservationManager observationManager = null;
+
         try {
-            if (this.observationManager != null) {
-                this.observationManager.removeEventListener(this);
+            adminSession = repository.loginAdministrative(null);
+
+            // Get JCR ObservationManager from Workspace
+            observationManager = adminSession.getWorkspace().getObservationManager();
+
+            if (observationManager != null) {
+                // Un-register event handler
+                observationManager.removeEventListener(this);
             }
         } finally {
             if (adminSession != null) {
