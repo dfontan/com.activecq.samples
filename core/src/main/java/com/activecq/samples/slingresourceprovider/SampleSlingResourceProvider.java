@@ -104,7 +104,7 @@ public class SampleSlingResourceProvider implements ResourceProvider {
         // as the provided resource
         Map<String, String> thirdPartyData = new HashMap<String, String>();
         // Mocking some data from a third party that represents this resource
-        thirdPartyData.put("resourceTypeKey", "vendors/activecq/samples/components/content/title");
+        thirdPartyData.put("resourceTypeKey", "samples/components/content/title");
         thirdPartyData.put("sample-data", "This is sample data");
 
         ResourceMetadata resourceMetaData = new ResourceMetadata();
@@ -155,7 +155,7 @@ public class SampleSlingResourceProvider implements ResourceProvider {
             // be compatible with getResource(..)
             resourceMetaData.setResolutionPath(path + "_" + i);
             resourceMetaData.put("index", String.valueOf(i));
-            final String resourceType = "vendors/activecq/samples/components/content/title";
+            final String resourceType = "samples/components/content/title";
 
             Resource resource = new SyntheticResource(parent.getResourceResolver(),
                     resourceMetaData, resourceType);
