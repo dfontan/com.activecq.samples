@@ -35,7 +35,7 @@ import java.util.Hashtable;
 
 @Component(
         label = "Samples - Custom Event Publisher",
-        description = "",
+        description = "Sample implementation of a Custom Event Publisher based on Sling",
         immediate = true,
         metatype = false
 )

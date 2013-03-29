@@ -50,7 +50,7 @@ import java.util.Dictionary;
 
 @Component(
         label = "Samples - Sling Event Handler",
-        description = "",
+        description = "Sample implementation of a Custom Event Listener based on Sling",
         immediate = true,
         metatype = false
 )
