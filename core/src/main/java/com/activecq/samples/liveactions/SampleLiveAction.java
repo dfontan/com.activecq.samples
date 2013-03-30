@@ -15,17 +15,21 @@
  */
 package com.activecq.samples.liveactions;
 
+
 import com.day.cq.wcm.api.WCMException;
-import com.day.cq.wcm.api.msm.ActionConfig;
-import com.day.cq.wcm.api.msm.LiveAction;
-import com.day.cq.wcm.api.msm.LiveRelationship;
+import com.day.cq.wcm.msm.api.ActionConfig;
+import com.day.cq.wcm.msm.api.LiveAction;
+import com.day.cq.wcm.msm.api.LiveRelationship;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.commons.json.JSONException;
+import org.apache.sling.commons.json.io.JSONWriter;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
@@ -91,6 +95,11 @@ public class SampleLiveAction implements LiveAction {
     private String[] parameterNames;
 
     @Override
+    public void execute(Resource resource, Resource resource2, LiveRelationship liveRelationship, boolean b, boolean b2) throws WCMException {
+        // TBD
+    }
+
+    @Override
     public void execute(ResourceResolver resolver, LiveRelationship relation, ActionConfig config, boolean autoSave) throws WCMException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -101,6 +110,11 @@ public class SampleLiveAction implements LiveAction {
     }
 
     @Override
+    public String getTitle() {
+        return null;
+    }
+
+    @Override
     public String[] getPropertiesNames() {
         return this.parameterNames;
     }
@@ -108,6 +122,11 @@ public class SampleLiveAction implements LiveAction {
     @Override
     public String getParameterName() {
         return this.name;
+    }
+
+    @Override
+    public void write(JSONWriter jsonWriter) throws JSONException {
+       // Deprecated
     }
 
     @Override

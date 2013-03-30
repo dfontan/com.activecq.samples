@@ -22,8 +22,6 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.auth.core.spi.AuthenticationFeedbackHandler;
 import org.apache.sling.auth.core.spi.AuthenticationHandler;
@@ -90,18 +88,13 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
-    /**
-     * Fields *
-     */
-
-    private ResourceResolver adminResourceResolver;
 
     /** AuthenticationHandler Methods **/
 
     /**
      * Extract the credentials contained inside the request, parameter or cookie
      *
-     * @see com.day.cq.auth.impl.AbstractHTTPAuthHandler#authenticate(javax.servlet.http.HttpServletRequest,
+     * @see com .day.cq.auth.impl.AbstractHTTPAuthHandler#authenticate(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
     @Override
@@ -188,17 +181,9 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
 
         this.trustCredentials = PropertiesUtil.toString(
                 properties.get(PROP_TRUST_CREDENTIALS), DEFAULT_TRUST_CREDENTIALS);
-
-        try {
-            adminResourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
-        } catch (LoginException ex) {
-        }
     }
 
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
-        if (adminResourceResolver != null) {
-            adminResourceResolver.close();
-        }
     }
 }

@@ -406,6 +406,14 @@
                 <scope>provided</scope>
                 <type>bundle</type>
             </dependency>
+            <dependency>
+                <groupId>com.day.cq.wcm</groupId>
+                <artifactId>cq-msm-api</artifactId>
+                <version>5.5.0</version>
+                <scope>provided</scope>
+                <type>bundle</type>
+            </dependency>
+
 
             <!-- OSGi Wrappers -->
             <dependency>

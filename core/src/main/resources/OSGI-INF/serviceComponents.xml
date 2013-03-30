@@ -71,7 +71,8 @@
     <scr:component enabled="true" immediate="true" name="com.activecq.samples.liveactions.SampleLiveAction" activate="activate" deactivate="deactivate">
         <implementation class="com.activecq.samples.liveactions.SampleLiveAction"/>
         <service servicefactory="false">
-            <provide interface="com.day.cq.wcm.api.msm.LiveAction"/>
+            <provide interface="com.day.cq.wcm.msm.api.LiveAction"/>
+            <provide interface="com.day.cq.commons.JSONItem"/>
         </service>
         <property name="service.vendor" type="String" value="ActiveCQ"/>
         <property name="cq.wcm.msm.action.name" type="String" value="sampleLiveAction"/>
