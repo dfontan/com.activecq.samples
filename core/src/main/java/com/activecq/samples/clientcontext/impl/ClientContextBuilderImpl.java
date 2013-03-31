@@ -16,7 +16,6 @@
 
 package com.activecq.samples.clientcontext.impl;
 
-import com.activecq.api.utils.HttpRequestUtil;
 import com.activecq.samples.clientcontext.ClientContextBuilder;
 import com.activecq.samples.clientcontext.ClientContextStore;
 import com.adobe.granite.xss.ProtectionContext;
@@ -45,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -181,7 +181,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
             if (AuthorizableResolution.IMPERSONATION.equals(authorizableResolution)) {
                 // Get the authorizableId from the Query Params
                 log.debug("Get authorizableId from QP");
-                return StringUtils.strip(HttpRequestUtil.getParameterOrAttribute(request, AUTHORIZABLE_ID));
+                return StringUtils.strip(getParameterOrAttribute(request, AUTHORIZABLE_ID, null));
             } else if (AuthorizableResolution.AUTHENTICATION.equals(authorizableResolution)) {
                 // Check the user Sling has associated with the request
                 final ResourceResolver resourceResolver = request.getResourceResolver();
@@ -204,7 +204,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
 
     @Override
     public String getPath(SlingHttpServletRequest request) {
-        final String path = StringUtils.stripToNull(HttpRequestUtil.getParameterOrAttribute(request, PATH));
+        final String path = StringUtils.stripToNull(getParameterOrAttribute(request, PATH, null));
         if (path == null) {
             return path;
         }
@@ -269,7 +269,7 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
 
         if (wcmMode != null && !WCMMode.DISABLED.equals(wcmMode)) {
             // If in Author Mode
-            final String authorizableId = HttpRequestUtil.getParameterOrAttribute(request, AUTHORIZABLE_ID);
+            final String authorizableId = getParameterOrAttribute(request, AUTHORIZABLE_ID, null);
             if (StringUtils.isNotBlank(authorizableId)) {
                 log.debug("Use Impersonation");
                 return AuthorizableResolution.IMPERSONATION;
@@ -279,4 +279,22 @@ public class ClientContextBuilderImpl implements ClientContextBuilder {
         log.debug("Use Authentication");
         return AuthorizableResolution.AUTHENTICATION;
     }
-}
+
+    private static String getParameterOrAttribute(HttpServletRequest request, String key, String dfault) {
+        String value = null;
+        if (request == null) {
+            return value;
+        }
+
+        if (StringUtils.isNotBlank(request.getParameter(key))) {
+            value = request.getParameter(key);
+        } else if (StringUtils.isNotBlank((String) request.getAttribute(key))) {
+            value = (String) request.getAttribute(key);
+        }
+
+        if (StringUtils.isBlank(value)) {
+            value = dfault;
+        }
+
+        return value;
+    }}
