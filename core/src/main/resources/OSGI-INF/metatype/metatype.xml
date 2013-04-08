@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0" localization="OSGI-INF/metatype/metatype">
+    <OCD id="com.activecq.samples.replication.impl.ReverseReplicatorImpl" name="Samples - Reverse Replicator" description="Provides a simple mechanism for reverse replicating nodes. A Reverse replicator agent must be setup on the Server.">
+        <AD id="event.topics" type="String" default="org/apache/sling/api/resource/Resource/ADDED,org/apache/sling/api/resource/Resource/CHANGED,org/apache/sling/api/resource/Resource/REMOVED" name="Sling Event Topics" description="Sling Events to listen to via this Sling Event Handler.Values are limited to: org/apache/sling/api/resource/Resource/ADDED, org/apache/sling/api/resource/Resource/CHANGED, org/apache/sling/api/resource/Resource/REMOVED" cardinality="2147483647"/>
+        <AD id="prop.enabled" type="Boolean" default="true" name="Enable" description="Enables this reverse replication configuration."/>
+        <AD id="prop.synchronous" type="Boolean" default="false" name="Synchronous Replication" description="Should the replication be done synchronous or asynchronous? The default is 'false'."/>
+        <AD id="prop.supress-status-update" type="Boolean" default="true" name="Supress Status Update" description="If set to true the replication will not update the replication status properties after a replication. Default is 'true'."/>
+        <AD id="prop.supress-versioning" type="Boolean" default="true" name="Supress Versioning" description="If set to true the replication will not trigger implicit versioning. Default is 'true'"/>
+        <AD id="prop.paths" type="String" default="/path/to/replicate" name="Paths to replicate" description="JCR paths to listen on." cardinality="2147483647"/>
+        <AD id="prop.primary-types" type="String" default="" name="Primary Node Types" description="jcr:primaryType's to reverse replciate. Leave blank to disable this filter." cardinality="2147483647"/>
+        <AD id="prop.property-matches" type="String" default="cq:distribute=true" name="Primary Node Types to Replicate." description="Format is: &lt;property&gt;=&lt;value&gt;. Leave blank to disable this filter." cardinality="2147483647"/>
+        <AD id="prop.path-blacklist" type="String" name="Blacklist Regex" description="%prop.path-blacklist.description" cardinality="2147483647"/>
+        <AD id="prop.path-whitelist" type="String" name="Whitelist Regex" description="%prop.path-whitelist.description" cardinality="2147483647"/>
+    </OCD>
     <OCD id="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator" name="Samples - Resource Decorator" description="Sample Sling Resource Decorator">
         <AD id="prop.resource-types" type="String" default="samples/components/fake/slideshow" name="Resource Types" description="Resource Types to decorate"/>
     </OCD>
@@ -23,6 +35,9 @@
     <OCD id="com.activecq.samples.slingservice.impl.SampleServiceImpl" name="Samples - Basic Service" description="Sample implementation of a service.">
         <AD id="prop.enabled" type="Boolean" default="false" name="Service Enable/Disable" description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service."/>
     </OCD>
+    <Designate pid="com.activecq.samples.replication.impl.ReverseReplicatorImpl" factoryPid="com.activecq.samples.replication.impl.ReverseReplicatorImpl">
+        <Object ocdref="com.activecq.samples.replication.impl.ReverseReplicatorImpl"/>
+    </Designate>
     <Designate pid="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator">
         <Object ocdref="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator"/>
     </Designate>

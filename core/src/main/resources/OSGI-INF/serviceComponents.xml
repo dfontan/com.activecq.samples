@@ -85,6 +85,33 @@
         <implementation class="com.activecq.samples.querybuilder.SampleJsonHitWriter"/>
         <property name="service.pid" value="com.activecq.samples.querybuilder.SampleJsonHitWriter"/>
     </scr:component>
+    <scr:component enabled="true" immediate="true" name="com.activecq.samples.replication.impl.ReverseReplicatorImpl">
+        <implementation class="com.activecq.samples.replication.impl.ReverseReplicatorImpl"/>
+        <service servicefactory="false">
+            <provide interface="org.apache.sling.event.jobs.JobProcessor"/>
+            <provide interface="org.osgi.service.event.EventHandler"/>
+        </service>
+        <property name="service.vendor" type="String" value="ActiveCQ"/>
+        <property name="event.topics" type="String">
+            org/apache/sling/api/resource/Resource/ADDED
+            org/apache/sling/api/resource/Resource/CHANGED
+            org/apache/sling/api/resource/Resource/REMOVED
+        </property>
+        <property name="prop.enabled" type="Boolean" value="true"/>
+        <property name="prop.synchronous" type="Boolean" value="false"/>
+        <property name="prop.supress-status-update" type="Boolean" value="true"/>
+        <property name="prop.supress-versioning" type="Boolean" value="true"/>
+        <property name="prop.paths" type="String" value="/path/to/replicate"/>
+        <property name="prop.primary-types" type="String" value=""/>
+        <property name="prop.property-matches" type="String" value="cq:distribute=true"/>
+        <property name="prop.path-blacklist"/>
+        <property name="prop.path-whitelist"/>
+        <property name="service.pid" value="com.activecq.samples.replication.impl.ReverseReplicatorImpl"/>
+        <reference name="agentManager" interface="com.day.cq.replication.AgentManager" cardinality="1..1" policy="static" bind="bindAgentManager" unbind="unbindAgentManager"/>
+        <reference name="resourceResolverFactory" interface="org.apache.sling.api.resource.ResourceResolverFactory" cardinality="1..1" policy="static" bind="bindResourceResolverFactory" unbind="unbindResourceResolverFactory"/>
+        <reference name="replicator" interface="com.day.cq.replication.Replicator" cardinality="1..1" policy="static" bind="bindReplicator" unbind="unbindReplicator"/>
+        <reference name="eventAdmin" interface="org.osgi.service.event.EventAdmin" cardinality="1..1" policy="static" bind="bindEventAdmin" unbind="unbindEventAdmin"/>
+    </scr:component>
     <scr:component enabled="true" immediate="false" name="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator" activate="activate" deactivate="deactivate">
         <implementation class="com.activecq.samples.resourcedecorators.SampleResourceTypeResourceDecorator"/>
         <service servicefactory="false">
