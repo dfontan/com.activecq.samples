@@ -452,6 +452,7 @@
             <artifactId>cq-msm-api</artifactId>
             <version>5.5.0</version>
         </dependency>
+
     </dependencies>
     <description>Samples (Core)</description>
 </project>
