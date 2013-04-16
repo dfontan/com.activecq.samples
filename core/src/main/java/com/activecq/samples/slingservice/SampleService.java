@@ -15,10 +15,14 @@
  */
 package com.activecq.samples.slingservice;
 
+import org.apache.sling.api.resource.LoginException;
+
 /**
  * @author david
  */
 public interface SampleService {
 
     public String helloWorld();
+
+    public String getName(String path) throws LoginException;
 }

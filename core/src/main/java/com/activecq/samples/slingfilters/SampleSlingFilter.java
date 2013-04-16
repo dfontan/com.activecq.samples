@@ -79,14 +79,19 @@ public class SampleSlingFilter implements Filter {
         final SlingHttpServletRequest slingRequest = (SlingHttpServletRequest) request;
         final Resource resource = slingRequest.getResource();
 
-        if (false == true) {
+        if (resource.getPath().startsWith("/content/samples")) {
             // Is the SlingFilterScope is REQUEST, redirects can be issued.
             slingResponse.sendRedirect("/some/redirect.html");
             return;
         }
 
+        response.getWriter().write("<!-- Written from the Sample Sling Filter BEFORE the next include -->");
+
         // Finally, proceed with the rest of the Filter chain
         chain.doFilter(request, response);
+
+        response.getWriter().write("<!-- Written from the Sample Sling Filter AFTER the next include -->");
+
     }
 
     @Override

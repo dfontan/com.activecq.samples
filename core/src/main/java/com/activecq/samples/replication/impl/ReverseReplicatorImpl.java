@@ -206,7 +206,6 @@ public class ReverseReplicatorImpl implements JobProcessor, EventHandler {
 
         ResourceResolver adminResourceResolver = null;
         try {
-
             adminResourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
 
             final String resourcePath = (String) event.getProperty("path");
@@ -257,8 +256,8 @@ public class ReverseReplicatorImpl implements JobProcessor, EventHandler {
         if(StringUtils.equals(event.getTopic(), SlingConstants.TOPIC_RESOURCE_CHANGED)) {
             ValueMap properties = resource.adaptTo(ValueMap.class);
 
-            Date lastModified = properties.get(JcrConstants.JCR_LASTMODIFIED, Date.class);
-            Date lastReplicated = properties.get("cq:lastReplicated", Date.class);
+            final Date lastModified = properties.get(JcrConstants.JCR_LASTMODIFIED, Date.class);
+            final Date lastReplicated = properties.get("cq:lastReplicated", Date.class);
             
             if(lastReplicated == null) { return true; }
             if(lastModified == null) { setLastModified(resource); }
@@ -374,12 +373,11 @@ public class ReverseReplicatorImpl implements JobProcessor, EventHandler {
     
     
     private void replicate(final Resource resource, final Event event) throws ReplicationException {
-        ReplicationOptions replicationOptions = new ReplicationOptions();
-
         if(resource == null) { 
             return;      
         }
 
+        final ReplicationOptions replicationOptions = new ReplicationOptions();
         final Session adminSession = resource.getResourceResolver().adaptTo(Session.class);
 
         final String revision = (String) resource.getResourceMetadata().get("resourceVersion");
@@ -398,26 +396,27 @@ public class ReverseReplicatorImpl implements JobProcessor, EventHandler {
             final String path = resource.getPath();
             log.error((new StringBuilder()).append(adminSession.getUserID()).append(" is not allowed to replicate this page/asset ").append(path).append(". Issuing request for 'replication'").toString());
 
-            Dictionary properties = new Hashtable<String, Object>();
+            final Dictionary properties = new Hashtable<String, Object>();
             properties.put("path", path);
             properties.put("replicationType", getReplicationActionType(event));
-            Event activationEvent = new Event("com/day/cq/wcm/workflow/req/for/activation", properties);
+
+            final Event activationEvent = new Event("com/day/cq/wcm/workflow/req/for/activation", properties);
             eventAdmin.sendEvent(activationEvent);            
         }
     }
     
     protected boolean canReplicate(Object user, String path)  {
+        // Uses Admin Session; Can always replicat.
         return true;
-    //    return user.hasPermissionOn("wcm/core/privileges/replicate", path);
+
+        // return user.hasPermissionOn("wcm/core/privileges/replicate", path);
     }
         
     
     protected ReplicationActionType getReplicationActionType(Event event) {
         if(isDeleteEvent(event)) {
-            log.debug("IS REP ACTION: DELETE");
             return ReplicationActionType.DELETE;
         } else {
-            log.debug("IS REP ACTION: ACTIVATE");
             return ReplicationActionType.ACTIVATE;
         }
     }
@@ -457,9 +456,6 @@ public class ReverseReplicatorImpl implements JobProcessor, EventHandler {
             if(s == null || s.length != 2) { continue; }
             propertyMatches.put(s[0], s[1]);    
         }
-        //adminResourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
-        //adminSession = adminResourceResolver.adaptTo(Session.class);
-
     }
 
     protected void deactivate(ComponentContext componentContext) {

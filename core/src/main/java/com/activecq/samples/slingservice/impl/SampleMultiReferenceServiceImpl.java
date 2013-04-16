@@ -15,6 +15,7 @@
  */
 package com.activecq.samples.slingservice.impl;
 
+import com.activecq.samples.slingservice.SampleMultiReferenceService;
 import com.activecq.samples.slingservice.SampleService;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -60,7 +61,7 @@ import java.util.Map;
                 unbind = "unbindReferenceServices")
 })
 @Service
-public class SampleMultiReferenceServiceImpl implements SampleService {
+public class SampleMultiReferenceServiceImpl implements SampleMultiReferenceService {
     public static final String SAMPLE_SERVICE_NAME = "sampleService";
 
     /**

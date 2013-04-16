@@ -23,6 +23,9 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
@@ -52,7 +55,7 @@ public class SampleServiceImpl implements SampleService {
     private static final boolean DEFAULT_ENABLED = false;
     private boolean enabled = DEFAULT_ENABLED;
     @Property(label = "Service Enable/Disable", description = "Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service.", boolValue = DEFAULT_ENABLED)
-    private static final String PROP_ENABLED = "prop.enabled";
+    public static final String PROP_ENABLED = "prop.enabled";
 
     /* OSGi Service References */
     @Reference
@@ -70,12 +73,26 @@ public class SampleServiceImpl implements SampleService {
         return "Hello World!";
     }
 
+    @Override
+    public String getName(final String path) throws LoginException {
+        ResourceResolver resourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
+        Resource resource = resourceResolver.resolve(path);
+
+        if(resource == null) {
+            return null;
+        }
+
+        return resource.getName();
+    }
+
     /**
      * OSGi Component Methods *
      */
     @Activate
     protected void activate(final ComponentContext componentContext) throws Exception {
-        configure(componentContext);
+        final Map<String, String> properties = (Map<String, String>) componentContext.getProperties();
+
+        configure(properties);
     }
 
     @Deactivate
@@ -83,9 +100,7 @@ public class SampleServiceImpl implements SampleService {
         this.enabled = false;
     }
 
-    private void configure(final ComponentContext componentContext) {
-        final Map<String, String> properties = (Map<String, String>) componentContext.getProperties();
-
+    protected void configure(final Map<String, String> properties) {
         // Global Service Enabled/Disable Setting
         this.enabled = PropertiesUtil.toBoolean(properties.get(PROP_ENABLED), DEFAULT_ENABLED);
     }

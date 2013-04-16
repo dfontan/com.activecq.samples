@@ -101,9 +101,12 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
     public AuthenticationInfo extractCredentials(HttpServletRequest request,
                                                  HttpServletResponse response) {
 
+        final String extractedUserId = request.getParameter("j_username");
+        final String extractedPassword = request.getParameter("j_password");
+
         // Extract UserId and Password from Request and store in SimpleCredentials object
-        SimpleCredentials credentials =
-                new SimpleCredentials("extracted userId", "extracted password".toCharArray());
+        final SimpleCredentials credentials =
+                new SimpleCredentials(extractedUserId, extractedPassword.toCharArray());
 
         // Execute any pre-authentication here such as authenticating cookies
         // or authentication credentials to third-party systems
