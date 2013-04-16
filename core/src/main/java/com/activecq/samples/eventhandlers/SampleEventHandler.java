@@ -22,6 +22,7 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.SlingConstants;
 import org.apache.sling.event.EventUtil;
 import org.apache.sling.event.jobs.JobProcessor;
 import org.apache.sling.event.jobs.JobUtil;
@@ -127,9 +128,68 @@ public class SampleEventHandler implements JobProcessor, EventHandler, ClusterAw
 
     @Override
     public boolean process(Event event) {
-        final String path = (String) event.getProperty("resourcePath");
 
         // Process event logic here
+
+        /**
+         * Sling Event Properties - VERY handy
+         */
+
+        // Resource path "undergoing" the event
+        event.getProperty(SlingConstants.PROPERTY_PATH);
+
+        // Resource type
+        event.getProperty(SlingConstants.PROPERTY_RESOURCE_TYPE);
+
+        // Resource super type
+        event.getProperty(SlingConstants.PROPERTY_RESOURCE_SUPER_TYPE);
+
+        // Properties names that were added/changes/removed
+        event.getProperty(SlingConstants.PROPERTY_ADDED_ATTRIBUTES);
+        event.getProperty(SlingConstants.PROPERTY_CHANGED_ATTRIBUTES);
+        event.getProperty(SlingConstants.PROPERTY_REMOVED_ATTRIBUTES);
+
+        // User id
+        event.getProperty(SlingConstants.PROPERTY_USERID);
+
+        /**
+         * Event Properties
+         */
+
+        // Specifies application node
+        event.getProperty(EventUtil.PROPERTY_APPLICATION);
+
+        // Specifies if the event should be distributed in the cluster (defaults to false)
+        event.getProperty(EventUtil.PROPERTY_DISTRIBUTE);
+
+        // Timed Event properties
+        // Unique event id for Timed event
+        event.getProperty(EventUtil.PROPERTY_TIMED_EVENT_ID);
+        event.getProperty(EventUtil.PROPERTY_TIMED_EVENT_DATE);
+        event.getProperty(EventUtil.PROPERTY_TIMED_EVENT_PERIOD);
+        event.getProperty(EventUtil.PROPERTY_TIMED_EVENT_SCHEDULE);
+        event.getProperty(EventUtil.PROPERTY_TIMED_EVENT_TOPIC);
+
+
+        /**
+         * Available for Events that are processed as Jobs
+         */
+        if(JobUtil.isJobEvent(event)) {
+            event.getProperty(JobUtil.JOB_ID);
+            event.getProperty(JobUtil.PROPERTY_JOB_NAME);
+            event.getProperty(JobUtil.PROPERTY_JOB_QUEUE_NAME);
+            event.getProperty(JobUtil.PROPERTY_JOB_CREATED);
+            event.getProperty(JobUtil.PROPERTY_JOB_PARALLEL);
+            event.getProperty(JobUtil.PROPERTY_JOB_PRIORITY);
+            event.getProperty(JobUtil.PROPERTY_JOB_QUEUE_ORDERED);
+            event.getProperty(JobUtil.PROPERTY_JOB_RETRIES);
+            event.getProperty(JobUtil.PROPERTY_JOB_RETRY_COUNT);
+            event.getProperty(JobUtil.PROPERTY_JOB_RETRY_DELAY);
+            event.getProperty(JobUtil.PROPERTY_JOB_RUN_LOCAL);
+            event.getProperty(JobUtil.PROPERTY_JOB_TOPIC);
+            event.getProperty(JobUtil.PROPERTY_NOTIFICATION_JOB);
+        }
+
 
         // Only return false if job processing failed and the job should be rescheduled
         return true;

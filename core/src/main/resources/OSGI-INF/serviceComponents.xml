@@ -202,7 +202,7 @@
     <scr:component enabled="true" immediate="false" name="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl" activate="activate" deactivate="deactivate">
         <implementation class="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl"/>
         <service servicefactory="false">
-            <provide interface="com.activecq.samples.slingservice.SampleService"/>
+            <provide interface="com.activecq.samples.slingservice.SampleMultiReferenceService"/>
         </service>
         <property name="service.vendor" type="String" value="ActiveCQ"/>
         <property name="prop.enabled" type="Boolean" value="false"/>
