@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.activecq.samples.servlets;
+package com.activecq.samples.servlets.impl;
 
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
@@ -21,23 +21,25 @@ import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.OptingServlet;
-import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.framework.Constants;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author david
  */
 @SlingServlet(
-        label = "Samples - Sling All Methods Servlet",
+        label = "Samples - Sling Safe Methods Servlet",
         description = "Sample implementation of a Sling All Methods Servlet.",
-        paths = {"/services/all-sample"},
-        methods = {"GET", "POST"}, // Ignored if paths is set - Defaults to GET if not specified
+        paths = {"/services/safe-sample"},
+        methods = {"GET"}, // Ignored if paths is set - Defaults to GET if not specified
         resourceTypes = {}, // Ignored if paths is set
-        selectors = {"print.a4"}, // Ignored if paths is set
-        extensions = {"html", "htm"}  // Ignored if paths is set
+        selectors = {"print.a4", "print"}, // Ignored if paths is set
+        extensions = {"html"} // Ignored if paths is set
 )
 @Properties({
         @Property(
@@ -47,20 +49,40 @@ import java.io.IOException;
                 propertyPrivate = true
         )
 })
-public class SampleAllMethodsServlet extends SlingAllMethodsServlet implements OptingServlet {
+public class SampleSafeMethodsServlet extends SlingSafeMethodsServlet implements OptingServlet {
 
     /**
-     * Add overrides for other SlingAllMethodsServlet here (doHead, doTrace, doPut, doDelete, etc.) *
+     * Add overrides for other SlingSafeMethodsServlet here (doGeneric, doHead, doOptions, doTrace) *
      */
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
         // Implement custom handling of GET requests
-    }
+        boolean responseIsText = true;
 
-    @Override
-    protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-        // Implement custom handling of POST requests
+        if (responseIsText) {
+            // Write a standard text/html response
+            response.setContentType("text/html;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("<html><body>Text to write to response</body></html>");
+        } else {
+            // Write some binary data to the response; Such as sending back an Image or PDF
+            InputStream input = new InputStream() {
+                @Override
+                public int read() throws IOException {
+                    return 0;
+                }
+            };
+
+            response.setContentType(getServletContext().getMimeType(request.getPathInfo()));
+            OutputStream output = response.getOutputStream();
+            byte[] buffer = new byte[8192];
+
+            for (int length = 0; (length = input.read(buffer)) > 0; ) {
+                output.write(buffer, 0, length);
+                output.flush();
+            }
+        }
     }
 
     /**

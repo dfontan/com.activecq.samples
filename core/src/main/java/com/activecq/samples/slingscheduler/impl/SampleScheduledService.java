@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.activecq.samples.slingscheduler;
+package com.activecq.samples.slingscheduler.impl;
 
 import com.day.cq.jcrclustersupport.ClusterAware;
 import org.apache.felix.scr.annotations.Activate;

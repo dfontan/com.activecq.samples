@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.activecq.samples.querybuilder;
+package com.activecq.samples.querybuilder.impl;
 
 import com.day.cq.search.Query;
 import com.day.cq.search.result.Hit;

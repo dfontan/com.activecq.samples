@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.activecq.samples.resourcedecorators;
+package com.activecq.samples.resourcedecorators.impl;
 
 import com.activecq.samples.resourcewrappers.SampleSlideshowResourceWrapper;
 import org.apache.commons.lang.StringUtils;

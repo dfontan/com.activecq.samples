@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.activecq.samples.eventhandlers;
+package com.activecq.samples.eventhandlers.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;

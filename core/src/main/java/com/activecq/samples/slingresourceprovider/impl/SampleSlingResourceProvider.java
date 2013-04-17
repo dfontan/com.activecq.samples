@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.activecq.samples.slingresourceprovider;
+package com.activecq.samples.slingresourceprovider.impl;
 
 import com.day.cq.commons.jcr.JcrConstants;
 import org.apache.commons.lang.StringUtils;

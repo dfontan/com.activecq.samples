@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.activecq.samples.workflow;
+package com.activecq.samples.workflow.impl;
 
 import com.day.cq.workflow.WorkflowException;
 import com.day.cq.workflow.WorkflowSession;
