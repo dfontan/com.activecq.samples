@@ -126,6 +126,7 @@
                             !junit.*,
                             !org.apache.commons.io.*,
                             !org.apache.commons.dbcp,
+                            !org.codehaus.jackson.*,
                             *
                         </Import-Package>
 
@@ -451,6 +452,11 @@
             <groupId>com.day.cq.wcm</groupId>
             <artifactId>cq-msm-api</artifactId>
             <version>5.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.granite</groupId>
+            <artifactId>com.adobe.granite.jmx</artifactId>
+            <version>0.2.6</version>
         </dependency>
 
     </dependencies>
