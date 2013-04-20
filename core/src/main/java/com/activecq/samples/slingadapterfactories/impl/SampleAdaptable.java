@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.activecq.samples.slingadapterfactories;
+package com.activecq.samples.slingadapterfactories.impl;
 
 import org.apache.sling.api.adapter.SlingAdaptable;
 

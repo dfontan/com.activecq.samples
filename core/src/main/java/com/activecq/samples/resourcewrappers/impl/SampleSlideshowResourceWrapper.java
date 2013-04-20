@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.activecq.samples.resourcewrappers;
+package com.activecq.samples.resourcewrappers.impl;
 
 import com.day.cq.commons.ImageResource;
 import org.apache.commons.collections.IteratorUtils;

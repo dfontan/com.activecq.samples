@@ -20,7 +20,7 @@
         <AD id="service.ranking" type="Integer" default="20" name="Service Ranking" description="Service ranking. Higher gives more priority."/>
         <AD id="prop.trust-credentials" type="String" default="TrustedInfo" name="Trust Credentials" description="The Trust Credentials found in repository.xml or ldap.config"/>
     </OCD>
-    <OCD id="com.activecq.samples.slingfilters.impl.SampleSlingFilter" name="Samples - Sling Filter" description="Sample implementation of a Sling Filter"/>
+    <OCD id="com.activecq.samples.filters.impl.SampleSlingFilter" name="Samples - Sling Filter" description="Sample implementation of a Sling Filter"/>
     <OCD id="com.activecq.samples.slingscheduler.impl.SampleScheduledService" name="Samples - Sling Scheduled Service" description="%com.activecq.samples.slingscheduler.impl.SampleScheduledService.description">
         <AD id="service.enabled" type="Boolean" default="true" name="Enabled" description="Enable/Disable the Scheduled Service"/>
         <AD id="scheduler.expression" type="String" default="0 1 0 ? * *" name="Cron expression defining when this Scheduled Service will run" description="[every minute = 0 * * * * ?], [12:01am daily = 0 1 0 ? * *]"/>
@@ -45,8 +45,8 @@
     <Designate pid="com.activecq.samples.slingauthenticationhandler.impl.SampleSlingAuthenticationHandler">
         <Object ocdref="com.activecq.samples.slingauthenticationhandler.impl.SampleSlingAuthenticationHandler"/>
     </Designate>
-    <Designate pid="com.activecq.samples.slingfilters.impl.SampleSlingFilter">
-        <Object ocdref="com.activecq.samples.slingfilters.impl.SampleSlingFilter"/>
+    <Designate pid="com.activecq.samples.filters.impl.SampleSlingFilter">
+        <Object ocdref="com.activecq.samples.filters.impl.SampleSlingFilter"/>
     </Designate>
     <Designate pid="com.activecq.samples.slingscheduler.impl.SampleScheduledService">
         <Object ocdref="com.activecq.samples.slingscheduler.impl.SampleScheduledService"/>

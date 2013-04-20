@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.activecq.samples.contentfinder.viewhandler;
+package com.activecq.samples.contentfinder.impl.viewhandler;
 
 import com.day.cq.search.PredicateGroup;
 import com.day.cq.search.Query;

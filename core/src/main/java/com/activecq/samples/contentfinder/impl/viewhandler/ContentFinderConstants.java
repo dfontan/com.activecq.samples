@@ -1,4 +1,4 @@
-package com.activecq.samples.contentfinder.viewhandler;
+package com.activecq.samples.contentfinder.impl.viewhandler;
 
 /**
  * User: david

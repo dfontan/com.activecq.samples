@@ -16,7 +16,7 @@
 
 package com.activecq.samples.resourcedecorators.impl;
 
-import com.activecq.samples.resourcewrappers.SampleSlideshowResourceWrapper;
+import com.activecq.samples.resourcewrappers.impl.SampleSlideshowResourceWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;

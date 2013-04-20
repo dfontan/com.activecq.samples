@@ -1,6 +1,6 @@
-package com.activecq.samples.contentfinder.querybuilder;
+package com.activecq.samples.contentfinder.impl.querybuilder;
 
-import com.activecq.samples.contentfinder.ContentFinderHitBuilder;
+import com.activecq.samples.contentfinder.impl.ContentFinderHitBuilder;
 import com.day.cq.search.Query;
 import com.day.cq.search.result.Hit;
 import com.day.cq.search.writer.ResultHitWriter;

@@ -1,4 +1,4 @@
-package com.activecq.samples.contentfinder;
+package com.activecq.samples.contentfinder.impl;
 
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.dam.api.Asset;
