@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0" localization="OSGI-INF/metatype/metatype">
+    <OCD id="com.activecq.samples.filters.impl.SampleSlingFilter" name="Samples - Sling Filter" description="Sample implementation of a Sling Filter"/>
     <OCD id="com.activecq.samples.replication.impl.ReverseReplicatorImpl" name="Samples - Reverse Replicator" description="Provides a simple mechanism for reverse replicating nodes. A Reverse replicator agent must be setup on the Server.">
         <AD id="event.topics" type="String" default="org/apache/sling/api/resource/Resource/ADDED,org/apache/sling/api/resource/Resource/CHANGED,org/apache/sling/api/resource/Resource/REMOVED" name="Sling Event Topics" description="Sling Events to listen to via this Sling Event Handler.Values are limited to: org/apache/sling/api/resource/Resource/ADDED, org/apache/sling/api/resource/Resource/CHANGED, org/apache/sling/api/resource/Resource/REMOVED" cardinality="2147483647"/>
         <AD id="prop.enabled" type="Boolean" default="true" name="Enable" description="Enables this reverse replication configuration."/>
@@ -20,7 +21,6 @@
         <AD id="service.ranking" type="Integer" default="20" name="Service Ranking" description="Service ranking. Higher gives more priority."/>
         <AD id="prop.trust-credentials" type="String" default="TrustedInfo" name="Trust Credentials" description="The Trust Credentials found in repository.xml or ldap.config"/>
     </OCD>
-    <OCD id="com.activecq.samples.filters.impl.SampleSlingFilter" name="Samples - Sling Filter" description="Sample implementation of a Sling Filter"/>
     <OCD id="com.activecq.samples.slingscheduler.impl.SampleScheduledService" name="Samples - Sling Scheduled Service" description="%com.activecq.samples.slingscheduler.impl.SampleScheduledService.description">
         <AD id="service.enabled" type="Boolean" default="true" name="Enabled" description="Enable/Disable the Scheduled Service"/>
         <AD id="scheduler.expression" type="String" default="0 1 0 ? * *" name="Cron expression defining when this Scheduled Service will run" description="[every minute = 0 * * * * ?], [12:01am daily = 0 1 0 ? * *]"/>
@@ -36,6 +36,9 @@
     <OCD id="com.activecq.samples.slingservice.impl.SampleServiceImpl" name="Samples - Basic Service" description="Sample implementation of a service.">
         <AD id="prop.enabled" type="Boolean" default="false" name="Service Enable/Disable" description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service."/>
     </OCD>
+    <Designate pid="com.activecq.samples.filters.impl.SampleSlingFilter">
+        <Object ocdref="com.activecq.samples.filters.impl.SampleSlingFilter"/>
+    </Designate>
     <Designate pid="com.activecq.samples.replication.impl.ReverseReplicatorImpl" factoryPid="com.activecq.samples.replication.impl.ReverseReplicatorImpl">
         <Object ocdref="com.activecq.samples.replication.impl.ReverseReplicatorImpl"/>
     </Designate>
@@ -44,9 +47,6 @@
     </Designate>
     <Designate pid="com.activecq.samples.slingauthenticationhandler.impl.SampleSlingAuthenticationHandler">
         <Object ocdref="com.activecq.samples.slingauthenticationhandler.impl.SampleSlingAuthenticationHandler"/>
-    </Designate>
-    <Designate pid="com.activecq.samples.filters.impl.SampleSlingFilter">
-        <Object ocdref="com.activecq.samples.filters.impl.SampleSlingFilter"/>
     </Designate>
     <Designate pid="com.activecq.samples.slingscheduler.impl.SampleScheduledService">
         <Object ocdref="com.activecq.samples.slingscheduler.impl.SampleScheduledService"/>
