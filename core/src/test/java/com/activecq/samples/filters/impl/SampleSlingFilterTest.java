@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.activecq.samples.filters;
+package com.activecq.samples.filters.impl;
 
 import com.activecq.samples.filters.impl.SampleSlingFilter;
 import org.apache.sling.api.SlingHttpServletRequest;
