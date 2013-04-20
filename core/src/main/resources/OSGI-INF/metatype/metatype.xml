@@ -32,6 +32,7 @@
     <OCD id="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl" name="Samples - Multi-reference Service" description="Sample implementation of a service.">
         <AD id="prop.enabled" type="Boolean" default="false" name="Service Enable/Disable" description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service."/>
     </OCD>
+    <OCD id="com.activecq.samples.slingservice.impl.SampleMutableStateServiceImpl" name="Samples - Basic Service with Mutable state" description="Sample implementation of a service with mutable state."/>
     <OCD id="com.activecq.samples.slingservice.impl.SampleServiceImpl" name="Samples - Basic Service" description="Sample implementation of a service.">
         <AD id="prop.enabled" type="Boolean" default="false" name="Service Enable/Disable" description="Enables/Disables the service without nullifying service reference objects. This enable/disabling must be implemented in all public methods of this service."/>
     </OCD>
@@ -55,6 +56,9 @@
     </Designate>
     <Designate pid="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl">
         <Object ocdref="com.activecq.samples.slingservice.impl.SampleMultiReferenceServiceImpl"/>
+    </Designate>
+    <Designate pid="com.activecq.samples.slingservice.impl.SampleMutableStateServiceImpl">
+        <Object ocdref="com.activecq.samples.slingservice.impl.SampleMutableStateServiceImpl"/>
     </Designate>
     <Designate pid="com.activecq.samples.slingservice.impl.SampleServiceImpl">
         <Object ocdref="com.activecq.samples.slingservice.impl.SampleServiceImpl"/>
