@@ -28,6 +28,8 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -47,6 +49,7 @@ import java.util.Map;
 })
 @Service
 public class SampleClusterAwareServiceImpl implements SampleClusterAwareService, ClusterAware {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
      * OSGi Properties *

@@ -22,6 +22,8 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
 import org.osgi.framework.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 })
 @Service
 public class SampleMutableStateServiceImpl implements SampleMutableStateService {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     // "Normal" instance variables should be accessed via synchronized blocks
     private final Map<String, String> map = new HashMap<String, String>();

@@ -32,6 +32,8 @@ import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,6 +64,7 @@ import java.util.Map;
 })
 @Service
 public class SampleMultiReferenceServiceImpl implements SampleMultiReferenceService {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     public static final String SAMPLE_SERVICE_NAME = "sampleService";
 
     /**
