@@ -63,7 +63,7 @@
                                     <artifactId>${project.artifactId}</artifactId>
                                     <version>${project.version}</version>
                                     <overWrite>true</overWrite>
-                                    <destFileName>${project.groupId}-${project.artifactId}-${project.version}</destFileName>
+                                    <destFileName>${project.groupId}-${project.artifactId}-${project.version}.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${project.ui.basedir}/src/main/content/jcr_root/${project.ui.apps.installdir}</outputDirectory>
