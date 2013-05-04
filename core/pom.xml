@@ -97,6 +97,7 @@
                     <instructions>
                         <Bundle-Name>ActiveCQ ${project.parent.name}</Bundle-Name>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Activator>com.activecq.samples.impl.Activator</Bundle-Activator>
 
                         <!-- Import custom nodetypes -->
                         <Sling-Nodetypes>
@@ -124,6 +125,7 @@
                             !org.apache.commons.io.*,
                             !org.apache.commons.dbcp,
                             !org.codehaus.jackson.*,
+                            org.osgi.framework,
                             *
                         </Import-Package>
 
@@ -132,6 +134,10 @@
                             ${project.groupId}.*;version=${project.version},
                             ${project.groupId}.workflow.*;version=${project.version}
                         </Export-Package>
+
+                        <Private-Package>
+                        </Private-Package>
+
                     </instructions>
                 </configuration>
             </plugin>
@@ -193,6 +199,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Sling -->

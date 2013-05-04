@@ -140,21 +140,22 @@
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>5.0.0</version>
+                <version>4.2.0</version>
                 <scope>provided</scope>
                 <type>bundle</type>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
-                <version>4.1.0</version>
+                <version>4.2.0</version>
                 <scope>provided</scope>
                 <type>bundle</type>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.framework</artifactId>
-                <version>3.0.7</version>
+                <version>1.8.1</version>
+                <scope>provided</scope>
             </dependency>
 
 
