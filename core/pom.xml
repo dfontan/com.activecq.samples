@@ -87,6 +87,26 @@
                 </executions>
             </plugin>
 
+
+            <!-- Used for Apache Felix DM Annotations -->
+            <!-- http://felix.apache.org/documentation/subprojects/apache-felix-dependency-manager/apache-felix-dependency-manager-using-annotations/apache-felix-dependency-manager-using-annotations-quick-tour/apache-felix-dependency-manager-using-annotations-quick-start.html -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.dependencymanager.annotation</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>scan</goal>
+                        </goals>
+                        <configuration>
+                            <log>info</log>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
             <!-- Build OSGi bundle -->
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -113,10 +133,7 @@
 
                         <Import-Package>
                             !EDU.oswego.cs.dl.util.concurrent,
-                            !dalvik.system,
-                            !android.dalvik,
                             !org.apache.jackrabbit.test,
-                            !org.apache.cocoon,
                             !org.apache.lucene.*,
                             !org.junit.*,
                             !org.apache.cocoon.components.serializers.util,
@@ -125,18 +142,19 @@
                             !org.apache.commons.io.*,
                             !org.apache.commons.dbcp,
                             !org.codehaus.jackson.*,
-                            org.osgi.framework,
+                            <!-- DM -->
+                            !aQute.*,
+                            !org.apache.maven.*,
                             *
                         </Import-Package>
 
                         <!--<Import-Package>!com.day.crx.core.token,!org.apache.jackrabbit.*,*</Import-Package>-->
                         <Export-Package>
-                            ${project.groupId}.*;version=${project.version},
-                            ${project.groupId}.workflow.*;version=${project.version}
+                            org.apache.felix.dm.*,
+                            ${project.groupId}.*;version=${project.version}
                         </Export-Package>
 
-                        <Private-Package>
-                        </Private-Package>
+
 
                     </instructions>
                 </configuration>
@@ -199,7 +217,6 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
         <!-- Sling -->
@@ -468,6 +485,19 @@
             <artifactId>crx-auth-token</artifactId>
             <version>2.3.15</version>
             <scope>bundle</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.dependencymanager.annotation</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.dependencymanager.runtime</artifactId>
+            <version>3.1.0</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

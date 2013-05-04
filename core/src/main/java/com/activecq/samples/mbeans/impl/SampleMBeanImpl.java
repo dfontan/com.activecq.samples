@@ -21,6 +21,7 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
@@ -52,6 +53,9 @@ import java.util.Map;
 })
 @Service(value = DynamicMBean.class)
 public class SampleMBeanImpl extends AnnotatedStandardMBean implements SampleMBean {
+    @Reference
+    private com.activecq.samples.slingservice.SampleService sampleService;
+
     private String attributeOne = "initial value";
 
     // Required cstor for the AnnotatedStandardBean inheritance
@@ -74,7 +78,7 @@ public class SampleMBeanImpl extends AnnotatedStandardMBean implements SampleMBe
      */
     @Override
     public String helloWorld() {
-        return "Hello World!";
+        return sampleService.helloWorld();
     }
 
     /**
