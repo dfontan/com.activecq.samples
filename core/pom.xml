@@ -63,7 +63,7 @@
                                     <artifactId>${project.artifactId}</artifactId>
                                     <version>${project.version}</version>
                                     <overWrite>true</overWrite>
-                                    <destFileName>${project.build.fileName}</destFileName>
+                                    <destFileName>${project.groupId}-${project.artifactId}-${project.version}</destFileName>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${project.ui.basedir}/src/main/content/jcr_root/${project.ui.apps.installdir}</outputDirectory>
@@ -85,9 +85,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <outputDirectory>src/main/resources</outputDirectory>
-                </configuration>
             </plugin>
 
             <!-- Build OSGi bundle -->
@@ -381,7 +378,7 @@
             <groupId>com.adobe.granite</groupId>
             <artifactId>com.adobe.granite.jcrclustersupport</artifactId>
             <version>0.5.0</version>
-            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
 
 
