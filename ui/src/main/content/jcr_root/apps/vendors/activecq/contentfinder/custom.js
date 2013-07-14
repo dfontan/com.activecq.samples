@@ -6,8 +6,8 @@
     /* Tab name */
     tabTip: CQ.I18n.getMessage("QueryBuilder"),
 
-        /* Unique tab Id in form: cfTab-<unique-name> */
-        id: "cfTab-QueryBuilder",
+    /* Unique tab Id in form: cfTab-<unique-name> */
+    id: "cfTab-QueryBuilder",
 
     /* Tab icon */
     iconCls: "cq-cft-tab-icon pages",
@@ -20,24 +20,24 @@
 
     /* Paths under which this Tab can appear in the content finder */
     allowedPaths: [
-    "/content/*",
-    "/etc/scaffolding/*"
-],
+        "/content/*",
+        "/etc/scaffolding/*"
+    ],
 
     /* JS Function which returns a JS object representing the search criteria.
      Because this is a function it can produce dynamic JS objects based on other input items (ex. Tab search/filter inputs)
      See input item defintions in the "items" field */
     getParams: function () {
-    /* Get suggestField widget as defined below */
-    var suggestField = CQ.Ext.getCmp("cfTab-QueryBuilder-SearchField");
+        /* Get suggestField widget as defined below */
+        var suggestField = CQ.Ext.getCmp("cfTab-QueryBuilder-SearchField");
 
-    return {
-        /* get suggestField's value and send as QB's fulltext param */
-        "fulltext": suggestField.getValue(),
-        "10_property": "jcr:content/metadata/tiff:ImageWidth",
-        "10_property.value": "800",
-    };
-},
+        return {
+            /* get suggestField's value and send as QB's fulltext param */
+            "fulltext": suggestField.getValue(),
+            "10_property": "jcr:content/metadata/tiff:ImageWidth",
+            "10_property.value": "800",
+        };
+    },
 
     items: [
         CQ.wcm.ContentFinderTab.getQueryBoxConfig({
@@ -104,7 +104,6 @@
 
                 "orderby": "@jcr:content/cq:lastModified",
                 "orderby.sort" : "desc"
-
             }
         }, CQ.CF_REFRESH_INTERVAL)
     ]
