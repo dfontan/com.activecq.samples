@@ -14,7 +14,7 @@
         <project.ui.basedir>${project.parent.basedir}/ui</project.ui.basedir>
         <project.core.basedir>${project.parent.basedir}/core</project.core.basedir>
 
-        <vault.targetURL>http://localhost:4502/crx/packmgr/service.jsp</vault.targetURL>
+        <vault.targetURL>http://localhost:4503/crx/packmgr/service.jsp</vault.targetURL>
         <vault.userId>admin</vault.userId>
         <vault.password>admin</vault.password>
 
@@ -252,6 +252,12 @@
             </dependency>
 
             <!-- Adobe CQ -->
+            <dependency>
+                <groupId>com.day.crx.sling</groupId>
+                <artifactId>crx-auth-token</artifactId>
+                <version>2.4.23</version>
+                <scope>provided</scope>
+            </dependency>
             <dependency>
                 <groupId>com.adobe.granite</groupId>
                 <artifactId>com.adobe.granite.xssprotection</artifactId>

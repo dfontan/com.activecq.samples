@@ -483,8 +483,6 @@
         <dependency>
             <groupId>com.day.crx.sling</groupId>
             <artifactId>crx-auth-token</artifactId>
-            <version>2.3.15</version>
-            <scope>bundle</scope>
         </dependency>
 
         <dependency>
