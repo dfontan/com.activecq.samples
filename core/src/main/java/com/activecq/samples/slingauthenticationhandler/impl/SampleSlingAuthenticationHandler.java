@@ -28,6 +28,7 @@ import org.apache.sling.auth.core.spi.AuthenticationHandler;
 import org.apache.sling.auth.core.spi.AuthenticationInfo;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.jcr.resource.JcrResourceConstants;
+import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ import java.util.Dictionary;
         @Property(label = "Authentication Paths",
                 description = "JCR Paths which this Authentication Handler will authenticate",
                 name = AuthenticationHandler.PATH_PROPERTY,
-                value = {"/content/sample-path"},
+                value = {"/content/foo"},
                 cardinality = Integer.MAX_VALUE),
 
         @Property(label = "Service Ranking",
@@ -59,7 +60,7 @@ import java.util.Dictionary;
 
         @Property(
                 name = AuthenticationHandler.TYPE_PROPERTY,
-                value = HttpServletRequest.FORM_AUTH,
+                value = "SAMPLES",
                 propertyPrivate = true),
 
         @Property(label = "Vendor",
@@ -89,6 +90,9 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
     private ResourceResolverFactory resourceResolverFactory;
 
 
+    @Reference
+    private SlingSettingsService slingSettings;
+
     /** AuthenticationHandler Methods **/
 
     /**
@@ -101,8 +105,10 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
     public AuthenticationInfo extractCredentials(HttpServletRequest request,
                                                  HttpServletResponse response) {
 
-        final String extractedUserId = request.getParameter("j_username");
-        final String extractedPassword = request.getParameter("j_password");
+        log.error("Begin Extract credentials");
+        final String extractedUserId = "failed";//request.getParameter("j_username");
+        final String extractedPassword = "do not auth";//request.getParameter("j_password");
+
 
         // Extract UserId and Password from Request and store in SimpleCredentials object
         final SimpleCredentials credentials =
@@ -120,7 +126,7 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
 
             // Set Trusted Credentials Attributes; Must match to what is in
             // repository.xml or ldap.config (if LDAP is used)
-            credentials.setAttribute(trustCredentials, "this value is inconsequential");
+            //credentials.setAttribute(trustCredentials, "this value is inconsequential");
         }
 
         // Return a populated AuthenticationInfo object which will be
@@ -130,8 +136,13 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
 
         // Add the credentials obj to the AuthenticationInfo obj
         info.put(JcrResourceConstants.AUTHENTICATION_INFO_CREDENTIALS, credentials);
+        log.error("Exiting Extract credentials");
 
-        return info;
+        if(slingSettings.getRunModes().contains("author")) {
+            return null;
+        } else {
+            return info;
+        }
     }
 
     @Override
@@ -144,9 +155,14 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
     @Override
     public boolean requestCredentials(HttpServletRequest request,
                                       HttpServletResponse response) {
+        log.error("++ Begin Request credentials");
+
         // Invoked when an anonymous request is made to a resource this
         // authetication handler handles (based on OSGi paths properties)
-        return false;
+        log.error("-- Begin Request credentials");
+
+        // Also invoked after authenticatedFailed if this auth handler is the best match
+        return true;
     }
 
     /**
@@ -159,11 +175,15 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
 
         // Executes after extractCredentials(..) returns a credentials object
         // that CANNOT be authenticated by the LoginModule
+
+        log.error(">>>> Authentication failed");
+        request.setAttribute(AuthenticationHandler.REQUEST_LOGIN_PARAMETER, "SAMPLES");
     }
 
     @Override
     public boolean authenticationSucceeded(HttpServletRequest request, HttpServletResponse response, AuthenticationInfo authInfo) {
         // Executes if authentication by the LoginModule succeeds
+        log.error(">>>> Authentication succeeded");
 
         // Executes after extractCredentials(..) returns a credentials object
         // that CAN be authenticated by the LoginModule
