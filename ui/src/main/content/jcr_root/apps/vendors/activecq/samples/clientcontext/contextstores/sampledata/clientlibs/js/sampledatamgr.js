@@ -80,7 +80,8 @@
 
         // Invoke this Mgr's update event whenever the ProfileDataMgr's update it triggered. This allows this Mgr's data to be refreshed
         // in Authoring screen during Client Context "impersonations".
-    CQ_Analytics.ProfileDataMgr.addListener("initialize", function() { this.fireEvent("initialize"); }, thisMgr);
+    // This was infinite looping!
+    //CQ_Analytics.ProfileDataMgr.addListener("initialize", function() { this.fireEvent("initialize"); }, thisMgr);
 
     // Required registrations
     CQ_Analytics.CCM.addListener("configloaded", function() {
