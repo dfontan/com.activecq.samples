@@ -68,6 +68,7 @@ public class SampleSlingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
         if (!(request instanceof SlingHttpServletRequest) ||
                 !(response instanceof SlingHttpServletResponse)) {
             // Not a SlingHttpServletRequest/Response, so ignore.
@@ -85,12 +86,12 @@ public class SampleSlingFilter implements Filter {
             return;
         }
 
-        response.getWriter().write("<!-- Written from the Sample Sling Filter BEFORE the next include -->");
+        //response.getWriter().write("<!-- Written from the Sample Sling Filter BEFORE the next include -->");
 
         // Finally, proceed with the rest of the Filter chain
         chain.doFilter(request, response);
 
-        response.getWriter().write("<!-- Written from the Sample Sling Filter AFTER the next include -->");
+        //response.getWriter().write("<!-- Written from the Sample Sling Filter AFTER the next include -->");
 
     }
 

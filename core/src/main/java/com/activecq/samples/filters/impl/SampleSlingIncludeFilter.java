@@ -67,6 +67,13 @@ public class SampleSlingIncludeFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if(1 < 2) {
+            // Do not actually run this filter since it is for instructional purposes only
+            chain.doFilter(request, response);
+            return;
+        }
+
+
         final WCMMode mode = WCMMode.fromRequest(request);
         final IncludeOptions includeOptions = IncludeOptions.getOptions(request, true);
 
