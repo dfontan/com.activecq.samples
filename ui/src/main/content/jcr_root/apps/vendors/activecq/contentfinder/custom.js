@@ -35,7 +35,7 @@
             /* get suggestField's value and send as QB's fulltext param */
             "fulltext": suggestField.getValue(),
             "10_property": "jcr:content/metadata/tiff:ImageWidth",
-            "10_property.value": "800",
+            "10_property.value": "800"
         };
     },
 
