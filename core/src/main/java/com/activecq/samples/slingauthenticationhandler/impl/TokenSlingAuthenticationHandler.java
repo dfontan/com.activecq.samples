@@ -101,7 +101,12 @@ public class TokenSlingAuthenticationHandler implements AuthenticationHandler, A
 
     private boolean accepts(final HttpServletRequest request) {
         // Fail quickly and exit from the Auth Handler ASAP
-        return "go".equals(request.getParameter("auth"));
+
+        // This is check thats here to work with the Sample RememberMe Authentication Handler
+        final Boolean rememberMe = (Boolean) request.getAttribute(RememberMeSlingAuthenticationHandler.REMEMBER_ME_ROUTINE);
+        final String authKey = request.getParameter("auth");
+
+        return "go".equals(authKey) || (rememberMe != null && rememberMe.booleanValue());
     }
 
     /** AuthenticationHandler Methods **/
@@ -115,17 +120,23 @@ public class TokenSlingAuthenticationHandler implements AuthenticationHandler, A
     @Override
     public AuthenticationInfo extractCredentials(HttpServletRequest request,
                                                  HttpServletResponse response) {
+
         if(!accepts(request)) {
             return null;
         }
 
-        log.debug("Begin Extract credentials");
         final String extractedUserID = request.getParameter("j_sample_username");
         final String extractedPassword = "do not auth";//request.getParameter("j_password");
 
         // Execute any pre-authentication here such as authenticating cookies
         // or authentication credentials to third-party systems
-        final String crxUserID = extractedUserID;
+        String crxUserID = extractedUserID;
+
+        // Example to work w Sample RememeberMe Authentication Handler
+        final Boolean rememberMe = (Boolean) request.getAttribute(RememberMeSlingAuthenticationHandler.REMEMBER_ME_ROUTINE);
+        if(rememberMe != null && rememberMe.booleanValue()) {
+            crxUserID = "david";
+        }
 
         boolean preauthenticated = "david".equalsIgnoreCase(crxUserID); // hased on pre-authentication success
 

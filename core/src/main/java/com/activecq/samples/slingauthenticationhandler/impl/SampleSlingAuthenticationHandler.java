@@ -117,7 +117,7 @@ public class SampleSlingAuthenticationHandler implements AuthenticationHandler, 
         // Execute any pre-authentication here such as authenticating cookies
         // or authentication credentials to third-party systems
 
-        boolean preauthenticated = false; // hased on pre-authentication success
+        boolean preauthenticated = false; // based on pre-authentication success
 
         if (preauthenticated) {
             // If preauthenticated and the trustCredentials are applied, the
