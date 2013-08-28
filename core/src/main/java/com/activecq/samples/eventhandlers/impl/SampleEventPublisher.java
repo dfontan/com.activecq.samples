@@ -28,6 +28,7 @@ import org.apache.sling.event.jobs.JobUtil;
 import org.osgi.framework.Constants;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
+import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
 import java.util.Dictionary;
@@ -54,7 +55,14 @@ import java.util.Hashtable;
                         org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_REMOVED
                 },
                 description = "[Required] Sling Event Topics this event handler will to respond to.",
-                name = "event.topics",
+                name = EventConstants.EVENT_TOPIC,
+                propertyPrivate = true
+        ),
+        @Property(
+                label = "Event Filters",
+                value =   "(&(" + SlingConstants.PROPERTY_RESOURCE_TYPE + "=samples/title))",
+                description = "[Optional] Event Filters used to further restrict this event handler; Uses LDAP expression against event properties.",
+                name = EventConstants.EVENT_FILTER,
                 propertyPrivate = true
         )
 })

@@ -16,6 +16,7 @@
 package com.activecq.samples.eventhandlers.impl;
 
 import com.day.cq.jcrclustersupport.ClusterAware;
+import com.day.cq.replication.ReplicationAction;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
@@ -30,6 +31,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
+import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,18 +68,16 @@ import java.util.Dictionary;
                 label = "Event Topics",
                 value = {"samples/events/poked", "samples/events/*"},
                 description = "[Required] Event Topics this event handler will to respond to.",
-                name = "event.topics",
+                name = EventConstants.EVENT_TOPIC,
                 propertyPrivate = true
+        ),
+        @Property(
+            label = "Event Filters",
+            value =   "(&(" + ReplicationAction.PROPERTY_TYPE + "=DEACTIVATE))",
+            description = "[Optional] Event Filters used to further restrict this event handler; Uses LDAP expression against event properties.",
+            name = EventConstants.EVENT_FILTER,
+            propertyPrivate = true
         )
-    /*
-    @Property(
-        label="Event Filter",
-        value="(propKey=propValue)",
-        description="[Optional] Event Filter further selects Events of interest.",
-        name="event.topics",
-        propertyPrivate=true
-    )
-    */
 })
 @Service
 public class SampleEventHandler implements JobProcessor, EventHandler, ClusterAware {
@@ -93,6 +93,10 @@ public class SampleEventHandler implements JobProcessor, EventHandler, ClusterAw
     public void handleEvent(Event event) {
         boolean handleLocally = false;
         boolean handleWithMaster = !handleLocally;
+
+        for(String name : event.getPropertyNames()) {
+            log.debug("{} : {}", name, event.getProperty(name));
+        }
 
         if (!ArrayUtils.contains(event.getPropertyNames(), EventUtil.PROPERTY_DISTRIBUTE)) {
             // This is the check for a distributed event or not; if this property does not exist, it usually
