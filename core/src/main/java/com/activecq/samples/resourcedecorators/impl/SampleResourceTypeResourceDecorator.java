@@ -16,7 +16,7 @@
 
 package com.activecq.samples.resourcedecorators.impl;
 
-import com.activecq.samples.resourcewrappers.impl.SampleSlideshowResourceWrapper;
+import com.activecq.samples.resourcewrappers.impl.SampleResourceWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -26,15 +26,14 @@ import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceDecorator;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -67,21 +66,6 @@ public class SampleResourceTypeResourceDecorator implements ResourceDecorator {
 
     @Override
     public Resource decorate(Resource resource) {
-        return decorate(resource, null);
-    }
-
-    @Override
-    public Resource decorate(Resource resource, HttpServletRequest request) {
-        /* Usually you will want to check to ensure the resource meets some criteria before
-           decorating. It is rare that you want to decorate all resources all the time.
-
-           An "accepts(..)" method is a handy abstraction for managing this.
-        */
-        if (!accepts(resource, request)) {
-            // In this sample, only handle resources with
-            // sling:resourceType=vendors/activecq/samples/components/fake/slideshow
-            return resource;
-        }
         // Remember to return early (as seen above) as this decorator is executed on all
         // Resource resolutions (this happens ALOT), especially if the decorator performs
         // any complex/slow running logic.
@@ -97,22 +81,43 @@ public class SampleResourceTypeResourceDecorator implements ResourceDecorator {
 
         // Any overridden methods (ex. adaptTo) on the wrapper, will be used when invoked on the
         // resultant Resource object (even before casting).
-        return new SampleSlideshowResourceWrapper(resource);
+        if(!accepts(resource)) {
+            return resource;
+        }
+
+
+        final Map<String, Object> overlay = new HashMap<String, Object>();
+        overlay.put("pageSize", 100);
+
+        return new SampleResourceWrapper(resource, overlay);
+
+    }
+
+    @Deprecated
+    @Override
+    public Resource decorate(Resource resource, HttpServletRequest request) {
+        return this.decorate(resource);
     }
 
     /**
      * Check if the decorator should decorate this resource.
      *
      * @param resource
-     * @param request
      * @return
      */
-    private boolean accepts(final Resource resource, final HttpServletRequest request) {
+    private boolean accepts(final Resource resource) {
         if (resource == null) {
             return false;
         }
 
+        if(StringUtils.equals(resource.getPath(), "/libs/wcm/core/content/damadmin/grid/assets")) {
+            return true;
+        } else {
+            return false;
+        }
+
         // Using ResourceUtil.isA(..) will send this into an infinite recursive lookup loop
+        /*
         for (final String resourceType : this.resourceTypes) {
             final ValueMap properties = resource.adaptTo(ValueMap.class);
             if (properties == null) {
@@ -127,6 +132,7 @@ public class SampleResourceTypeResourceDecorator implements ResourceDecorator {
         }
 
         return false;
+        */
     }
 
 
